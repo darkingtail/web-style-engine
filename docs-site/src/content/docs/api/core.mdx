@@ -1,0 +1,17 @@
+---
+title: Core API
+description: StyleEngine protocol.
+---
+
+The core API is exported from `web-style-engine/core` and from the root package.
+
+```ts
+import { createStyleEngine } from 'web-style-engine'
+import { createSSRRenderer } from 'web-style-engine/renderers'
+
+const renderer = createSSRRenderer()
+const engine = createStyleEngine({ renderer, key: 'app' })
+const root = engine.css({ color: 'red', padding: 8 }, { label: 'Button-root' })
+```
+
+Core responsibilities include stable class names, style serialization, registry dedupe, labels, keyframes, global styles, scoped CSS variables, and renderer handoff.

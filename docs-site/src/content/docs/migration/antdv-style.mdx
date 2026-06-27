@@ -1,0 +1,14 @@
+---
+title: antdv-style migration
+description: Migration scaffold for validating the abstraction against antdv-style.
+---
+
+`web-style-engine` should not know about antdv. The migration path keeps antdv-specific behavior inside `antdv-style`:
+
+- antdv-next `theme.useToken`
+- `prefixCls` and `iconPrefixCls`
+- antdv token mapping
+- antdv CSS variable prefix
+- antdv-specific ThemeProvider defaults
+
+The first migration step can wrap the existing Emotion implementation with `createStyleEngineFromEmotion`, then gradually extract `createStylesCore`, split ThemeProvider, integrate `web-responsive`, and validate Vue / React / Solid against the same core.

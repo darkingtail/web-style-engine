@@ -1,0 +1,21 @@
+---
+title: Renderers
+description: Runtime renderer implementations.
+---
+
+Renderers separate style generation from insertion targets.
+
+Available initial renderers:
+
+- `createDOMRenderer` for browser, Shadow DOM, iframe, extension UI, and micro-frontends
+- `createSSRRenderer` for request-scoped extraction
+- `createNoopRenderer` for class-name-only or server-only usage
+- `createMockRenderer` for unit tests
+
+```ts
+createDOMRenderer({
+  container: shadowRoot,
+  nonce: 'nonce-value',
+  insertionPoint: document.querySelector('#style-insertion-point'),
+})
+```

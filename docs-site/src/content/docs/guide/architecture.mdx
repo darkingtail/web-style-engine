@@ -1,0 +1,18 @@
+---
+title: Architecture
+description: Layering for the framework-agnostic style engine.
+---
+
+```txt
+Style Engine Core
+  ↓
+DOM / SSR / Noop / Mock Renderer
+  ↓
+createStylesCore
+  ↓
+Vue / React / Solid adapters
+  ↓
+Design-system adapters such as antdv-style
+```
+
+The lower layers do not know about framework or design-system concerns. This keeps `web-style-engine` usable by Vue, React, Solid, Web Components, iframe previews, Shadow DOM, SSR, and micro-frontends.
