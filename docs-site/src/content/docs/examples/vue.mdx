@@ -1,0 +1,42 @@
+---
+title: Vue example
+description: A fuller Vue adapter example using theme, props, and responsive helpers.
+---
+
+import VueFullExample from '../../../components/VueFullExample.vue'
+
+This example uses the Vue-facing adapter from the main `web-style-engine` package. The component keeps local Vue state, passes state as style props, and uses the shared responsive helper to change layout at the `regular` breakpoint.
+
+<VueFullExample client:only="vue" />
+
+## Key imports
+
+```ts
+import {
+  createDOMRenderer,
+  createResponsive,
+  createStyleEngine,
+  createVueStyleSystem,
+} from 'web-style-engine'
+```
+
+## Pattern
+
+```ts
+const system = createVueStyleSystem({
+  engine,
+  theme,
+  responsive,
+})
+
+const useStyles = system.createStyles(({ theme, responsive }, props) => ({
+  root: {
+    color: theme.text,
+    ...responsive.object({
+      up: {
+        regular: { gridTemplateColumns: '1fr auto' },
+      },
+    }),
+  },
+}))
+```

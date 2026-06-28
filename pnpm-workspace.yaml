@@ -1,0 +1,10 @@
+packages:
+  - .
+  - docs-site
+
+onlyBuiltDependencies:
+  - esbuild
+  - sharp
+allowBuilds:
+  esbuild: true
+  sharp: true

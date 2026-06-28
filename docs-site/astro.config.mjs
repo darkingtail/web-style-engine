@@ -13,9 +13,17 @@ export default defineConfig({
         {
           label: 'Guide',
           items: [
+            { label: 'Home', slug: '' },
             { label: 'Overview', slug: 'guide/overview' },
             { label: 'Architecture', slug: 'guide/architecture' },
             { label: 'Multi-framework demos', slug: 'guide/multi-framework' },
+          ],
+        },
+        {
+          label: 'Examples',
+          items: [
+            { label: 'Vue example', slug: 'examples/vue' },
+            { label: 'React example', slug: 'examples/react' },
           ],
         },
         {

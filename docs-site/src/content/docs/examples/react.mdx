@@ -1,0 +1,42 @@
+---
+title: React example
+description: A fuller React adapter example using state, theme, and responsive helpers.
+---
+
+import ReactFullExample from '../../../components/ReactFullExample'
+
+This example uses the React-facing adapter from the main `web-style-engine` package. The component keeps local React state, passes state as style props, and uses the shared responsive helper for layout changes.
+
+<ReactFullExample client:only="react" />
+
+## Key imports
+
+```ts
+import {
+  createDOMRenderer,
+  createReactStyleSystem,
+  createResponsive,
+  createStyleEngine,
+} from 'web-style-engine'
+```
+
+## Pattern
+
+```ts
+const system = createReactStyleSystem({
+  engine,
+  theme,
+  responsive,
+})
+
+const useStyles = system.createStyles(({ theme, responsive }, props) => ({
+  root: {
+    color: theme.text,
+    ...responsive.object({
+      up: {
+        regular: { gridTemplateColumns: '1fr auto' },
+      },
+    }),
+  },
+}))
+```
