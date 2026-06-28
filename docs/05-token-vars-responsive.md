@@ -1,4 +1,4 @@
-# Step 5：Token / CSS Vars / web-responsive 集成
+# Step 5：Token / CSS Vars / Responsive 集成
 
 ## 目标
 
@@ -104,16 +104,17 @@ createTokenEngine({
 
 ---
 
-## 与 web-responsive 的关系
+## Responsive 子模块
 
-`web-responsive` 应保持独立。
+`web-responsive` 的核心能力已经迁入 `web-style-engine`，作为一级子模块维护。
 
-推荐依赖关系：
+推荐边界：
 
 ```txt
-web-responsive 不依赖 web-style-engine
-web-style-engine 可以可选消费 web-responsive
-antdv-style 可以同时消费两者
+responsive 不依赖 core engine
+core engine 不硬编码 responsive 断点系统
+createStyles / framework adapter 可以可选消费 responsive 实例
+antdv-style 消费 web-style-engine/responsive
 ```
 
 示例：
@@ -127,8 +128,11 @@ const responsive = createResponsive({
   },
 })
 
-const engine = createStyleEngine({
-  responsive,
+const styles = responsive.object({
+  base: { padding: 12 },
+  up: {
+    tablet: { padding: 24 },
+  },
 })
 ```
 
@@ -150,7 +154,7 @@ const engine = createStyleEngine({
 
 但 `responsive` 应该是可选能力。
 
-没有引入 `web-responsive` 时，style engine 仍然可以工作。
+没有创建 responsive 实例时，style engine 仍然可以工作。
 
 ---
 
@@ -194,7 +198,7 @@ createStyleEngine({
 
 ## Accessibility / Color Scheme
 
-可以和 `web-responsive` 的 media feature 能力配合：
+可以和 `web-style-engine/responsive` 的 media feature 能力配合：
 
 - prefers-color-scheme
 - prefers-reduced-motion
@@ -214,6 +218,8 @@ style engine 不需要重复实现 media query 系统。
 - vars SSR extraction
 - token flatten 最小能力
 - transformer/plugin 协议
-- 可选接入 web-responsive
+- 内置 responsive 子模块
+- createResponsive / createResponsiveObserver
+- query / object / style adapter 输出
 - createStyles utils 能传入 responsive/cssVar
 - 不绑定任何具体设计系统 token

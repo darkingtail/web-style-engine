@@ -1,24 +1,25 @@
 import type { StyleEngine, StyleInput } from '../core/types'
+import type { AnyResponsive } from '../responsive/types'
 
-export type StyleFactory<Theme, Props> = (
-  utils: CreateStylesUtils<Theme>,
+export type StyleFactory<Theme, Props, TResponsive extends AnyResponsive = AnyResponsive> = (
+  utils: CreateStylesUtils<Theme, TResponsive>,
   props: Props,
 ) => Record<string, StyleInput | string>
 
-export interface CreateStylesRuntimeContext<Theme, Props> {
+export interface CreateStylesRuntimeContext<Theme, Props, TResponsive extends AnyResponsive = AnyResponsive> {
   theme: Theme
   props: Props
-  responsive?: unknown
+  responsive?: TResponsive
   cacheKey?: string
 }
 
-export interface CreateStylesUtils<Theme> {
+export interface CreateStylesUtils<Theme, TResponsive extends AnyResponsive = AnyResponsive> {
   theme: Theme
   token?: unknown
   css: StyleEngine['css']
   cx: StyleEngine['cx']
   keyframes: StyleEngine['keyframes']
-  responsive?: unknown
+  responsive?: TResponsive
   cssVar?: Record<string, string>
 }
 
@@ -35,11 +36,11 @@ export interface CreateStylesResult<Styles extends Record<string, string> = Reco
   theme: unknown
 }
 
-export function createStylesCore<Theme, Props, Styles extends Record<string, string> = Record<string, string>>(
+export function createStylesCore<Theme, Props, TResponsive extends AnyResponsive = AnyResponsive, Styles extends Record<string, string> = Record<string, string>>(
   engine: StyleEngine,
-  factory: StyleFactory<Theme, Props>,
+  factory: StyleFactory<Theme, Props, TResponsive>,
   options: CreateStylesCoreOptions = {},
-): (context: CreateStylesRuntimeContext<Theme, Props>) => CreateStylesResult<Styles> {
+): (context: CreateStylesRuntimeContext<Theme, Props, TResponsive>) => CreateStylesResult<Styles> {
   const cache = new Map<string, CreateStylesResult<Styles>>()
   const shouldCache = options.cache ?? true
 
@@ -47,7 +48,7 @@ export function createStylesCore<Theme, Props, Styles extends Record<string, str
     const cacheKey = context.cacheKey ?? undefined
     if (shouldCache && cacheKey && cache.has(cacheKey)) return cache.get(cacheKey)!
 
-    const utils: CreateStylesUtils<Theme> = {
+    const utils: CreateStylesUtils<Theme, TResponsive> = {
       theme: context.theme,
       css: engine.css,
       cx: engine.cx,

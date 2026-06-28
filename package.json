@@ -34,6 +34,10 @@
       "types": "./dist/tokens/index.d.ts",
       "import": "./dist/tokens/index.js"
     },
+    "./responsive": {
+      "types": "./dist/responsive/index.d.ts",
+      "import": "./dist/responsive/index.js"
+    },
     "./migration": {
       "types": "./dist/migration/index.d.ts",
       "import": "./dist/migration/index.js"
@@ -43,8 +47,8 @@
     "build": "tsc -p tsconfig.json",
     "test": "vitest run",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "docs:dev": "npm --prefix docs-site run dev",
-    "docs:build": "npm --prefix docs-site run build"
+    "docs:dev": "pnpm --dir docs-site run dev",
+    "docs:build": "pnpm --dir docs-site run build"
   },
   "peerDependencies": {
     "@emotion/css": "^11.0.0"

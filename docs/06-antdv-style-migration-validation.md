@@ -16,7 +16,7 @@
 antdv-style
   = web-style-engine
   + web-style-engine/vue
-  + web-responsive
+  + web-style-engine/responsive
   + antdv-next token adapter
   + antdv-specific defaults
 ```
@@ -95,9 +95,9 @@ antdv token adapter
 
 ---
 
-## 6.4 接入 web-responsive
+## 6.4 接入 responsive 子模块
 
-用 `web-responsive` 替换当前 responsive 实现。
+用 `web-style-engine/responsive` 替换当前 responsive 实现。
 
 `antdv-style` 内部自己定义 antdv-style preset：
 
@@ -118,7 +118,7 @@ const preset = defineResponsivePreset({
 注意：
 
 ```txt
-web-responsive 不内置 antd preset
+web-style-engine/responsive 不内置 antd preset
 antdv-style 自己生成 preset
 ```
 
@@ -167,7 +167,7 @@ web-style-engine-test
 
 - antdv-style 可以基于 web-style-engine 运行
 - antdv-style 现有测试通过
-- web-responsive 被接入
+- web-style-engine/responsive 被接入
 - Vue adapter 验证通过
 - React adapter 验证通过
 - Solid adapter 验证通过

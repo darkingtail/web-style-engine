@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { createStyleEngine, createMockRenderer, createSSRRenderer, createStylesCore, createVueStyleSystem, createReactStyleSystem, createSolidStyleSystem, px2rem } from '../src'
+import { createStyleEngine, createMockRenderer, createSSRRenderer, createStylesCore, createVueStyleSystem, createReactStyleSystem, createSolidStyleSystem, createResponsive, px2rem } from '../src'
 
 describe('web-style-engine first slice', () => {
   it('creates stable class names, dedupes rules, and extracts styles', () => {
@@ -42,6 +42,35 @@ describe('web-style-engine first slice', () => {
 
     expect(result.styles.root).toMatch(/^test-/)
     expect(renderer.extract().cssText).toContain('#1677ff')
+  })
+
+  it('passes responsive helpers through createStylesCore', () => {
+    const renderer = createMockRenderer()
+    const engine = createStyleEngine({ key: 'test', renderer })
+    const responsive = createResponsive({
+      breakpoints: {
+        mobile: 0,
+        tablet: 768,
+      },
+    })
+    const useStyles = createStylesCore(engine, ({ responsive }, props: { dense: boolean }) => ({
+      root: responsive!.object({
+        base: { padding: props.dense ? 8 : 12 },
+        up: {
+          tablet: { padding: 24 },
+        },
+      }),
+    }), { label: 'Panel' })
+
+    const result = useStyles({
+      theme: {},
+      props: { dense: true },
+      responsive,
+    })
+
+    const cssText = renderer.extract().cssText
+    expect(cssText).toContain(`.${result.styles.root}{padding:8px;}`)
+    expect(cssText).toContain(`@media (min-width: 768px){.${result.styles.root}{padding:24px;}}`)
   })
 
   it('supports CSS variables and transformers', () => {

@@ -28,7 +28,7 @@ Implemented in `src/create-styles`:
 
 - framework-independent style factory execution
 - theme and props input
-- optional responsive context
+- typed optional responsive context
 - label and cache support
 
 ## Step 4: Framework adapters
@@ -44,14 +44,19 @@ These are intentionally thin and do not import framework runtimes yet.
 
 ## Step 5: Token / CSS Vars / responsive integration
 
-Implemented in `src/tokens` and core `engine.vars`:
+Implemented in `src/tokens`, `src/responsive`, and core `engine.vars`:
 
 - token flattening
 - CSS variable name generation
 - scoped CSS vars injection
 - `px2rem` transformer
 - `rtlTransformer`
-- responsive slot preserved as optional context
+- `createResponsive`
+- default and custom breakpoints
+- `up`, `down`, `below`, `only`, `between`, alias, and preset query helpers
+- object, CSS string, and adapter-based responsive style output
+- `createResponsiveObserver` with SSR-safe snapshots and injected `matchMedia`
+- responsive helpers passed through `createStylesCore`
 
 ## Step 6: antdv-style migration validation
 

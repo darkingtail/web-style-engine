@@ -79,8 +79,43 @@ export function serializeCSSObject(input: CSSObject): string {
 
 export function wrapClassRule(selector: string, cssText: string): string {
   const trimmed = cssText.trim()
-  if (trimmed.startsWith('@')) return `${trimmed}{${selector}{}}`
-  return `${selector}{${trimmed}}`
+  if (!trimmed.includes('@')) return `${selector}{${trimmed}}`
+
+  let declarations = ''
+  let atRules = ''
+  let index = 0
+
+  while (index < trimmed.length) {
+    const atIndex = trimmed.indexOf('@', index)
+    if (atIndex === -1) {
+      declarations += trimmed.slice(index)
+      break
+    }
+
+    declarations += trimmed.slice(index, atIndex)
+    const openIndex = trimmed.indexOf('{', atIndex)
+    if (openIndex === -1) {
+      declarations += trimmed.slice(atIndex)
+      break
+    }
+
+    let depth = 0
+    let closeIndex = openIndex
+    for (; closeIndex < trimmed.length; closeIndex++) {
+      const char = trimmed[closeIndex]
+      if (char === '{') depth++
+      if (char === '}') depth--
+      if (depth === 0) break
+    }
+
+    const prelude = trimmed.slice(atIndex, openIndex)
+    const body = trimmed.slice(openIndex + 1, closeIndex)
+    atRules += `${prelude}{${selector}{${body}}}`
+    index = closeIndex + 1
+  }
+
+  const baseRule = declarations.trim() ? `${selector}{${declarations.trim()}}` : ''
+  return `${baseRule}${atRules}`
 }
 
 export function cx(...classNames: ClassValue[]): string {

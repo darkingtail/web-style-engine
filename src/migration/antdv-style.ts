@@ -39,7 +39,7 @@ export function createAntdvStyleMigrationPlan(): AntdvStyleMigrationPlan {
       'Wrap the current Emotion implementation with the StyleEngine protocol.',
       'Extract createStylesCore from Vue-specific createStyles code.',
       'Split ThemeProvider into resolver core, Vue wrapper, and antdv token adapter.',
-      'Replace local responsive logic with optional web-responsive integration.',
+      'Replace local responsive logic with web-style-engine/responsive integration.',
       'Validate Vue, React, and Solid adapters against the same core.',
       'Run antdv-style compatibility and SSR regression checks.',
     ],

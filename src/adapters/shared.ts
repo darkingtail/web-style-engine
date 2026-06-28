@@ -1,34 +1,35 @@
 import type { StyleEngine } from '../core/types'
+import type { AnyResponsive } from '../responsive/types'
 import { createStylesCore, type CreateStylesCoreOptions, type CreateStylesRuntimeContext, type StyleFactory } from '../create-styles/core'
 
 export interface FrameworkStyleAdapter<Provider, UseValue> {
   StyleProvider: Provider
   ThemeProvider: Provider
-  createStyles: <Theme, Props>(factory: StyleFactory<Theme, Props>, options?: CreateStylesCoreOptions) => UseValue
+  createStyles: <Theme, Props, TResponsive extends AnyResponsive = AnyResponsive>(factory: StyleFactory<Theme, Props, TResponsive>, options?: CreateStylesCoreOptions) => UseValue
   useTheme: () => unknown
   useStyleEngine: () => StyleEngine
 }
 
-export interface AdapterRuntime<Theme = unknown> {
+export interface AdapterRuntime<Theme = unknown, TResponsive extends AnyResponsive = AnyResponsive> {
   engine: StyleEngine
   theme: Theme
-  responsive?: unknown
+  responsive?: TResponsive
 }
 
-export function createAdapterRuntime<Theme>(engine: StyleEngine, theme: Theme, responsive?: unknown): AdapterRuntime<Theme> {
-  const runtime: AdapterRuntime<Theme> = { engine, theme }
+export function createAdapterRuntime<Theme, TResponsive extends AnyResponsive = AnyResponsive>(engine: StyleEngine, theme: Theme, responsive?: TResponsive): AdapterRuntime<Theme, TResponsive> {
+  const runtime: AdapterRuntime<Theme, TResponsive> = { engine, theme }
   if (responsive !== undefined) runtime.responsive = responsive
   return runtime
 }
 
-export function resolveCreateStyles<Theme, Props>(
-  runtime: AdapterRuntime<Theme>,
-  factory: StyleFactory<Theme, Props>,
+export function resolveCreateStyles<Theme, Props, TResponsive extends AnyResponsive = AnyResponsive>(
+  runtime: AdapterRuntime<Theme, TResponsive>,
+  factory: StyleFactory<Theme, Props, TResponsive>,
   options?: CreateStylesCoreOptions,
 ) {
   const run = createStylesCore(runtime.engine, factory, options)
   return (props: Props, cacheKey?: string) => {
-    const context: CreateStylesRuntimeContext<Theme, Props> = {
+    const context: CreateStylesRuntimeContext<Theme, Props, TResponsive> = {
       theme: runtime.theme,
       props,
     }
@@ -40,20 +41,20 @@ export function resolveCreateStyles<Theme, Props>(
 
 export type FrameworkAdapterKind = 'vue' | 'react' | 'solid'
 
-export interface MinimalFrameworkAdapter<Theme> {
+export interface MinimalFrameworkAdapter<Theme, TResponsive extends AnyResponsive = AnyResponsive> {
   kind: FrameworkAdapterKind
-  runtime: AdapterRuntime<Theme>
-  createStyles<Props>(factory: StyleFactory<Theme, Props>, options?: CreateStylesCoreOptions): (props: Props, cacheKey?: string) => ReturnType<ReturnType<typeof createStylesCore<Theme, Props>>>
+  runtime: AdapterRuntime<Theme, TResponsive>
+  createStyles<Props>(factory: StyleFactory<Theme, Props, TResponsive>, options?: CreateStylesCoreOptions): (props: Props, cacheKey?: string) => ReturnType<ReturnType<typeof createStylesCore<Theme, Props, TResponsive>>>
   useTheme(): Theme
   useStyleEngine(): StyleEngine
 }
 
-export function createMinimalFrameworkAdapter<Theme>(kind: FrameworkAdapterKind, runtime: AdapterRuntime<Theme>): MinimalFrameworkAdapter<Theme> {
+export function createMinimalFrameworkAdapter<Theme, TResponsive extends AnyResponsive = AnyResponsive>(kind: FrameworkAdapterKind, runtime: AdapterRuntime<Theme, TResponsive>): MinimalFrameworkAdapter<Theme, TResponsive> {
   return {
     kind,
     runtime,
-    createStyles<Props>(factory: StyleFactory<Theme, Props>, options?: CreateStylesCoreOptions) {
-      return resolveCreateStyles(runtime, factory, options)
+    createStyles<Props>(factory: StyleFactory<Theme, Props, TResponsive>, options?: CreateStylesCoreOptions) {
+      return resolveCreateStyles<Theme, Props, TResponsive>(runtime, factory, options)
     },
     useTheme() {
       return runtime.theme

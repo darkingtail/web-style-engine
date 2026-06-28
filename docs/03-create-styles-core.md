@@ -88,7 +88,7 @@ export interface CreateStylesUtils<Theme> {
 
 - `theme` 是泛型，不绑定 antdv
 - `token` 可选，由 design-system adapter 决定
-- `responsive` 可选接入 `web-responsive`
+- `responsive` 可选接入 `web-style-engine/responsive`
 - `cssVar` 是通用能力，不绑定 antdv token
 
 ---
@@ -168,7 +168,7 @@ label 应由 core 处理，而不是每个框架重复实现。
 createStylesCore
   + Vue inject theme
   + antdv token adapter
-  + web-responsive
+  + web-style-engine/responsive
 ```
 
 这样未来 React / Solid adapter 可以复用同一个 core。
