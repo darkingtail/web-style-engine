@@ -2,7 +2,7 @@
 
 This is the main roadmap index for `web-style-engine`.
 
-`web-style-engine` is a framework-agnostic style engine for Web UI. The style engine is the primary core. Responsive is one of the core capabilities, alongside renderers, CSS variables, tokens, framework adapters, SSR, and extensibility.
+`web-style-engine` is a framework-agnostic enterprise-grade Web style engine. The style engine is the primary core. Responsive is one of the core capabilities, alongside renderers, CSS variables, tokens, framework adapters, SSR, and extensibility.
 
 ## Target Scenarios
 
@@ -76,4 +76,3 @@ Not yet implemented:
 - Do not optimize for non-Web platforms.
 - Keep docs and examples close to real website scenarios.
 - Prefer pnpm for package management.
-

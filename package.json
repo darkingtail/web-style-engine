@@ -1,7 +1,7 @@
 {
   "name": "web-style-engine",
   "version": "0.0.0",
-  "description": "A framework-agnostic style engine for Web UI.",
+  "description": "A framework-agnostic enterprise-grade Web style engine.",
   "type": "module",
   "private": false,
   "sideEffects": false,

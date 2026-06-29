@@ -1,22 +1,18 @@
 # web-style-engine
 
-A framework-agnostic style engine for Web UI.
+A framework-agnostic enterprise-grade Web style engine.
 
-This package extracts the reusable style-engine layer from `antdv-style` and keeps framework adapters, runtime renderers, responsive helpers, token helpers, and design-system integrations separated.
+`web-style-engine` supports the style runtime underneath enterprise component libraries, design systems, responsive official websites, and complex Web applications. It extracts the reusable style-engine layer from `antdv-style` and keeps framework adapters, runtime renderers, responsive helpers, token helpers, and design-system integrations separated.
 
 ## Architecture
 
 ```txt
 Style Engine Core
-  ↓
-DOM / SSR / Noop / Mock Renderer
-  ↓
-Responsive query / observer helpers
-  ↓
-createStylesCore
-  ↓
-Vue / React / Solid adapters
-  ↓
+  -> DOM / SSR / Noop / Mock Renderer
+  -> Responsive query / observer helpers
+  -> createStylesCore
+  -> Vue / React / Solid adapters
+  ->
 Design-system adapters such as antdv-style
 ```
 
@@ -33,6 +29,5 @@ const responsive = createResponsive({
   },
 })
 ```
-
 
 See `docs/` for the design notes and `docs-site/` for the Astro Starlight documentation site scaffold.
