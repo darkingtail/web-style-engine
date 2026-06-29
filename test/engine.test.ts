@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { createStyleEngine, createMockRenderer, createSSRRenderer, createStylesCore, createVueStyleSystem, createReactStyleSystem, createSolidStyleSystem, createResponsive, px2rem } from '../src'
+import { createStyleEngine, createDOMRenderer, createMockRenderer, createNoopRenderer, createSSRRenderer, createStylesCore, createVueStyleSystem, createReactStyleSystem, createSolidStyleSystem, createResponsive, px2rem } from '../src'
 
 function createFakeDOM() {
   const createElement = (tagName: string) => ({
@@ -177,6 +177,47 @@ describe('web-style-engine first slice', () => {
     expect(styleElement.getAttribute('nonce')).toBe('abc')
     expect(styleElement.getAttribute('data-domtest')).toBe('domtest')
     expect(styleElement.textContent).toContain('color:red')
+  })
+
+  it('inserts DOM rules into a ShadowRoot container', () => {
+    const fakeDocument = createFakeDOM()
+    const shadowRoot = fakeDocument.createElement('shadow-root')
+    const renderer = createDOMRenderer({ key: 'shadow', container: shadowRoot as unknown as ShadowRoot })
+    const engine = createStyleEngine({ key: 'shadow', renderer })
+
+    engine.css({ color: 'purple' })
+
+    expect(shadowRoot.childNodes).toHaveLength(1)
+    const styleElement = shadowRoot.childNodes[0]
+    expect(styleElement.ownerDocument).toBe(fakeDocument)
+    expect(styleElement.getAttribute('data-shadow')).toBe('shadow')
+    expect(styleElement.textContent).toContain('color:purple')
+  })
+
+  it('creates DOM style elements with an iframe-like document container', () => {
+    const iframeDocument = createFakeDOM()
+    const renderer = createDOMRenderer({ key: 'frame', container: iframeDocument as unknown as Document })
+    const engine = createStyleEngine({ key: 'frame', renderer })
+
+    engine.css({ color: 'teal' })
+
+    expect(iframeDocument.head.childNodes).toHaveLength(1)
+    const styleElement = iframeDocument.head.childNodes[0]
+    expect(styleElement.ownerDocument).toBe(iframeDocument)
+    expect(styleElement.getAttribute('data-frame')).toBe('frame')
+    expect(styleElement.textContent).toContain('color:teal')
+  })
+
+  it('keeps the noop renderer extractable without DOM side effects', () => {
+    const renderer = createNoopRenderer()
+    const engine = createStyleEngine({ key: 'noop', renderer })
+
+    const className = engine.css({ color: 'red' })
+    engine.injectGlobal({ body: { margin: 0 } })
+    engine.flush()
+
+    expect(className).toMatch(/^noop-/)
+    expect(renderer.extract()).toEqual({ cssText: '', rules: [] })
   })
 
   it('disposes and flushes inserted rules', () => {

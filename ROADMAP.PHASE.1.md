@@ -23,9 +23,9 @@ Make the style engine core reliable enough for real applications.
   - `@layer`
 - [x] Add `fontFace`.
 - [x] Strengthen `dispose` and `flush` tests.
-- [ ] Add DOM renderer tests for:
-  - ShadowRoot container
-  - iframe-like document container
+- [x] Add DOM renderer tests for:
+  - [x] ShadowRoot container
+  - [x] iframe-like document container
   - [x] nonce
   - [x] insertion point
 - [x] Document core usage and renderer options.
@@ -36,7 +36,7 @@ Make the style engine core reliable enough for real applications.
 - Added default `layer` and `specificity` handling.
 - Added `fontFace`.
 - Improved nested selector and at-rule serialization.
-- Added tests for responsive style output through `createStylesCore`, top-level DOM renderer options, and cleanup APIs.
+- Added tests for responsive style output through `createStylesCore`, top-level DOM renderer options, ShadowRoot and iframe-like containers, Noop renderer behavior, and cleanup APIs.
 
 ## Acceptance
 
