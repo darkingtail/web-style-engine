@@ -34,6 +34,7 @@ export default defineConfig({
             { label: 'Core', slug: 'api/core' },
             { label: 'Responsive', slug: 'api/responsive' },
             { label: 'Theme and Tokens', slug: 'api/theme' },
+            { label: 'Framework Adapters', slug: 'api/adapters' },
             { label: 'Renderers', slug: 'api/renderers' },
             { label: 'createStylesCore', slug: 'api/create-styles-core' },
           ],

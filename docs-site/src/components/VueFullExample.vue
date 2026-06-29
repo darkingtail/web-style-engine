@@ -39,7 +39,7 @@ const system = createVueStyleSystem({
   responsive,
 })
 
-const useStyles = system.createStyles(({ theme, responsive }, props: { dense: boolean; highlighted: boolean }) => ({
+const useStyles = system.createUseStyles(({ theme, responsive }, props: { dense: boolean; highlighted: boolean }) => ({
   shell: {
     border: `1px solid ${theme.border}`,
     borderRadius: 8,

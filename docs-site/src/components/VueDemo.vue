@@ -31,7 +31,7 @@ const system = createVueStyleSystem({
   responsive,
 })
 
-const useStyles = system.createStyles(({ theme, responsive }) => ({
+const useStyles = system.createUseStyles(({ theme, responsive }) => ({
   root: {
     border: '1px solid rgba(15, 118, 110, 0.24)',
     borderRadius: 8,
@@ -69,7 +69,7 @@ const { styles } = useStyles({})
   <section :class="styles.root">
     <div>
       <strong>Vue adapter</strong>
-      <p>Uses the shared style engine with Vue-facing createStyles.</p>
+      <p>Uses the shared style engine with Vue-facing composable styles.</p>
     </div>
     <span :class="styles.badge">responsive.ready</span>
   </section>

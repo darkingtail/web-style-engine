@@ -31,7 +31,7 @@ Implemented:
 - Theme runtime protocol with scoped theme registration
 - Token alias resolution, derivative token helpers, token diff helpers, and CSS var fallbacks
 - Responsive module: breakpoints, media query helpers, media feature helpers, container query helpers, H5 helpers, responsive object output, observer
-- Vue / React / Solid minimal adapters
+- Vue / React / Solid adapters with provider-style scopes, hook/composable style helpers, reactive theme sources, and responsive external-store bridge
 - Astro docs site with Vue, React, responsive landing, and theme runtime examples
 
 Partially implemented:

@@ -5,7 +5,7 @@ description: A fuller Vue adapter example using theme, props, and responsive hel
 
 import VueFullExample from '../../../components/VueFullExample.vue'
 
-This example uses the Vue-facing adapter from the main `web-style-engine` package. The component keeps local Vue state, passes state as style props, and uses the shared responsive helper to change layout at the `regular` breakpoint.
+This example uses the Vue-facing adapter from the main `web-style-engine` package. The component keeps local Vue state, passes state as style props, and uses the shared responsive helper through a composable-style facade.
 
 <VueFullExample client:only="vue" />
 
@@ -29,7 +29,7 @@ const system = createVueStyleSystem({
   responsive,
 })
 
-const useStyles = system.createStyles(({ theme, responsive }, props) => ({
+const useStyles = system.createUseStyles(({ theme, responsive }, props) => ({
   root: {
     color: theme.text,
     ...responsive.object({
@@ -40,3 +40,5 @@ const useStyles = system.createStyles(({ theme, responsive }, props) => ({
   },
 }))
 ```
+
+For a Vue app, provide `system.StyleProvider.getValue()` from your application shell and wrap `system.createUseStyles()` in your own composable. The package itself does not import Vue.

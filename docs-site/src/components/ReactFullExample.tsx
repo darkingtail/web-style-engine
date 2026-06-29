@@ -35,7 +35,7 @@ const system = createReactStyleSystem({
   responsive,
 })
 
-const useStyles = system.createStyles(({ theme, responsive }, props: { compact: boolean; selected: 'ops' | 'design' }) => ({
+const useStyles = system.createUseStyles(({ theme, responsive }, props: { compact: boolean; selected: 'ops' | 'design' }) => ({
   shell: {
     border: `1px solid ${theme.border}`,
     borderRadius: 8,

@@ -30,7 +30,7 @@ const system = createReactStyleSystem({
   responsive,
 })
 
-const useStyles = system.createStyles(({ theme, responsive }) => ({
+const useStyles = system.createUseStyles(({ theme, responsive }) => ({
   root: {
     border: '1px solid rgba(124, 58, 237, 0.24)',
     borderRadius: 8,
