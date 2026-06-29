@@ -14,12 +14,16 @@ export function createVueStyleSystem<Theme, TResponsive extends AnyResponsive = 
   const adapter = createMinimalFrameworkAdapter('vue', runtime)
 
   return {
-    StyleProvider: runtime,
-    ThemeProvider: runtime,
+    StyleProvider: adapter.StyleProvider,
+    ThemeProvider: adapter.ThemeProvider,
     createStyles<Props>(factory: StyleFactory<Theme, Props, TResponsive>, styleOptions?: CreateStylesCoreOptions) {
       return adapter.createStyles(factory, styleOptions)
     },
+    createUseStyles<Props>(factory: StyleFactory<Theme, Props, TResponsive>, styleOptions?: CreateStylesCoreOptions) {
+      return adapter.createUseStyles(factory, styleOptions)
+    },
     useTheme: adapter.useTheme,
     useStyleEngine: adapter.useStyleEngine,
+    useResponsive: adapter.useResponsive,
   }
 }
