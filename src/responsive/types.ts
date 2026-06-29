@@ -2,6 +2,11 @@ export type BreakpointMap = Record<string, number>
 export type BreakpointKey<TBreakpoints extends BreakpointMap> = Extract<keyof TBreakpoints, string>
 export type ResponsiveUnit = 'px' | 'em' | 'rem' | ((value: number) => string)
 export type QueryMode = 'up' | 'down' | 'below' | 'only'
+export type ColorScheme = 'light' | 'dark'
+export type ReducedMotion = 'reduce' | 'no-preference'
+export type ContrastPreference = 'more' | 'less' | 'custom' | 'no-preference'
+export type ForcedColors = 'active' | 'none'
+export type SafeAreaSide = 'top' | 'right' | 'bottom' | 'left'
 
 export interface AliasRange<TBreakpoints extends BreakpointMap> {
   up?: BreakpointKey<TBreakpoints>
@@ -91,6 +96,9 @@ export interface Responsive<TBreakpoints extends BreakpointMap = BreakpointMap, 
   readonly unit: ResponsiveUnit
   readonly step: number
   readonly mediaType: string | false
+  readonly media: ResponsiveMediaHelpers
+  readonly container: ResponsiveContainerHelpers<TBreakpoints>
+  readonly h5: ResponsiveH5Helpers
   up: ((key: BreakpointKey<TBreakpoints>) => string) & QueryRecord<TBreakpoints>
   down: ((key: BreakpointKey<TBreakpoints>) => string) & QueryRecord<TBreakpoints>
   below: ((key: BreakpointKey<TBreakpoints>) => string) & QueryRecord<TBreakpoints>
@@ -104,6 +112,45 @@ export interface Responsive<TBreakpoints extends BreakpointMap = BreakpointMap, 
 }
 
 export type AnyResponsive = Responsive<any, any>
+
+export interface ResponsiveMediaHelpers {
+  print(): string
+  colorScheme(value: ColorScheme): string
+  reducedMotion(value?: ReducedMotion): string
+  contrast(value?: ContrastPreference): string
+  forcedColors(value?: ForcedColors): string
+}
+
+export interface ContainerQueryOptions {
+  name?: string
+}
+
+export interface ResponsiveContainerHelpers<TBreakpoints extends BreakpointMap> {
+  up(key: BreakpointKey<TBreakpoints>, options?: ContainerQueryOptions): string
+  down(key: BreakpointKey<TBreakpoints>, options?: ContainerQueryOptions): string
+  below(key: BreakpointKey<TBreakpoints>, options?: ContainerQueryOptions): string
+  only(key: BreakpointKey<TBreakpoints>, options?: ContainerQueryOptions): string
+  between(from: BreakpointKey<TBreakpoints>, to: BreakpointKey<TBreakpoints>, options?: ContainerQueryOptions): string
+  query(condition: string, options?: ContainerQueryOptions): string
+}
+
+export interface ViewportUnitOptions {
+  viewport: number
+  precision?: number
+}
+
+export interface SafeAreaInsetOptions {
+  fallback?: string
+}
+
+export interface ResponsiveH5Helpers {
+  vw(value: number, options?: ViewportUnitOptions): string
+  vh(value: number, options?: ViewportUnitOptions): string
+  vmin(value: number, options?: ViewportUnitOptions): string
+  vmax(value: number, options?: ViewportUnitOptions): string
+  safeAreaInset(side: SafeAreaSide, options?: SafeAreaInsetOptions): string
+  safeAreaPadding(options?: Partial<Record<SafeAreaSide, string>> & { fallback?: string }): ResponsiveCSSObject
+}
 
 export type MatchMediaLike = (query: string) => MediaQueryListLike
 

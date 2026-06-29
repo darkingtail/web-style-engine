@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { createStyleEngine, createDOMRenderer, createMockRenderer, createNoopRenderer, createSSRRenderer, createStylesCore, createVueStyleSystem, createReactStyleSystem, createSolidStyleSystem, createResponsive, px2rem } from '../src'
+import { createStyleEngine, createDOMRenderer, createMockRenderer, createNoopRenderer, createSSRRenderer, createStylesCore, createVueStyleSystem, createReactStyleSystem, createSolidStyleSystem, createResponsive, px2rem, px2vw } from '../src'
 
 function createFakeDOM() {
   const createElement = (tagName: string) => ({
@@ -122,6 +122,23 @@ describe('web-style-engine first slice', () => {
     const cssText = renderer.extract().cssText
     expect(cssText).toContain('--test-color-primary:#1677ff')
     expect(cssText).toContain('margin-left:1rem')
+  })
+
+  it('supports px2vw for H5 and WebView output', () => {
+    const renderer = createMockRenderer()
+    const engine = createStyleEngine({
+      key: 'test',
+      renderer,
+      transformers: [px2vw({ viewportWidth: 375, precision: 3, minPixelValue: 1 })],
+    })
+
+    engine.css({ width: 187.5, borderWidth: 1, marginLeft: -37.5 })
+
+    const cssText = renderer.extract().cssText
+    expect(cssText).toContain('width:50vw')
+    expect(cssText).toContain('border-width:1px')
+    expect(cssText).toContain('margin-left:-10vw')
+    expect(() => px2vw({ viewportWidth: 0 })).toThrow('positive finite number')
   })
 
   it('supports default layer, specificity, fontFace, and nested at-rules', () => {

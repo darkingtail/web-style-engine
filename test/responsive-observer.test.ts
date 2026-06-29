@@ -145,4 +145,33 @@ describe('responsive observer external store', () => {
     second()
     expect(media.listenerCount()).toBe(0)
   })
+
+  it('isolates iframe-like and Shadow DOM observers through injected matchMedia', () => {
+    const responsive = createResponsive({ breakpoints: { mobile: 0, tablet: 768, desktop: 1280 } })
+    const iframeWindow = createControllableMatchMedia(390)
+    const shadowHostWindow = createControllableMatchMedia(1440)
+
+    const iframeObserver = createResponsiveObserver(responsive, { matchMedia: iframeWindow.matchMedia })
+    const shadowObserver = createResponsiveObserver(responsive, { matchMedia: shadowHostWindow.matchMedia })
+
+    const stopIframe = iframeObserver.subscribe(() => {})
+    const stopShadow = shadowObserver.subscribe(() => {})
+
+    expect(iframeObserver.getSnapshot().current).toBe('mobile')
+    expect(shadowObserver.getSnapshot().current).toBe('desktop')
+    expect(iframeWindow.listenerCount()).toBe(3)
+    expect(shadowHostWindow.listenerCount()).toBe(3)
+
+    iframeWindow.setWidth(900)
+
+    expect(iframeObserver.getSnapshot().current).toBe('tablet')
+    expect(shadowObserver.getSnapshot().current).toBe('desktop')
+
+    stopIframe()
+    expect(iframeWindow.listenerCount()).toBe(0)
+    expect(shadowHostWindow.listenerCount()).toBe(3)
+
+    stopShadow()
+    expect(shadowHostWindow.listenerCount()).toBe(0)
+  })
 })

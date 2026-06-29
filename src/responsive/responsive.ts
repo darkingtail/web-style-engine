@@ -8,7 +8,10 @@ import type {
   QueryRecord,
   Responsive,
   ResponsiveAliases,
+  ResponsiveContainerHelpers,
   ResponsivePreset,
+  ResponsiveH5Helpers,
+  ResponsiveMediaHelpers,
   ResponsiveRule,
   ResponsiveStyleInput,
   ResponsiveUnit,
@@ -33,11 +36,13 @@ const reservedKeys = new Set([
   'between',
   'not',
   'query',
+  'media',
   'object',
   'rules',
   'css',
   'style',
   'container',
+  'h5',
   'observer',
   'current',
   'matches',
@@ -144,6 +149,66 @@ function wrapMedia(condition: string, mediaType: string | false): string {
   return mediaType ? `@media ${mediaType} and ${condition}` : `@media ${condition}`
 }
 
+function wrapContainer(condition: string, name?: string): string {
+  return name ? `@container ${name} ${condition}` : `@container ${condition}`
+}
+
+function formatViewportUnit(value: number, unit: 'vw' | 'vh' | 'vmin' | 'vmax', viewport: number, precision = 5): string {
+  if (!Number.isFinite(value)) throw new Error('responsive.h5: value must be a finite number')
+  if (!Number.isFinite(viewport) || viewport <= 0) throw new Error('responsive.h5: viewport must be a positive finite number')
+  if (!Number.isFinite(precision) || precision < 0) throw new Error('responsive.h5: precision must be a non-negative finite number')
+  return `${Number(((value / viewport) * 100).toFixed(precision))}${unit}`
+}
+
+function createMediaHelpers(): ResponsiveMediaHelpers {
+  return {
+    print() {
+      return '@media print'
+    },
+    colorScheme(value) {
+      return `@media (prefers-color-scheme: ${value})`
+    },
+    reducedMotion(value = 'reduce') {
+      return `@media (prefers-reduced-motion: ${value})`
+    },
+    contrast(value = 'more') {
+      return `@media (prefers-contrast: ${value})`
+    },
+    forcedColors(value = 'active') {
+      return `@media (forced-colors: ${value})`
+    },
+  }
+}
+
+function createH5Helpers(): ResponsiveH5Helpers {
+  return {
+    vw(value, options) {
+      return formatViewportUnit(value, 'vw', options?.viewport ?? 375, options?.precision)
+    },
+    vh(value, options) {
+      return formatViewportUnit(value, 'vh', options?.viewport ?? 667, options?.precision)
+    },
+    vmin(value, options) {
+      return formatViewportUnit(value, 'vmin', options?.viewport ?? 375, options?.precision)
+    },
+    vmax(value, options) {
+      return formatViewportUnit(value, 'vmax', options?.viewport ?? 667, options?.precision)
+    },
+    safeAreaInset(side, options) {
+      return `env(safe-area-inset-${side}, ${options?.fallback ?? '0px'})`
+    },
+    safeAreaPadding(options = {}) {
+      const fallback = options.fallback ?? '0px'
+      return {
+        paddingTop: options.top ?? `env(safe-area-inset-top, ${fallback})`,
+        paddingRight: options.right ?? `env(safe-area-inset-right, ${fallback})`,
+        paddingBottom: options.bottom ?? `env(safe-area-inset-bottom, ${fallback})`,
+        paddingLeft: options.left ?? `env(safe-area-inset-left, ${fallback})`,
+      }
+    },
+  }
+}
+
 export function createResponsive<const TBreakpoints extends BreakpointMap = typeof defaultBreakpoints, const TAliases extends ResponsiveAliases<TBreakpoints> | undefined = undefined>(
   options?: CreateResponsiveOptions<TBreakpoints> & { aliases?: TAliases },
 ): Responsive<TBreakpoints, TAliases> {
@@ -208,6 +273,29 @@ export function createResponsive<const TBreakpoints extends BreakpointMap = type
     }
     const conditions = [`(min-width: ${formatValue(fromValue, merged.unit)})`, maxCondition(toValue - merged.step)]
     return wrapMedia(conditions.join(' and '), merged.mediaType)
+  }
+
+  const containerCondition = (queryText: string) => queryText.replace(/^@media\s+(?:[a-z]+ and\s+)?/, '')
+
+  const container: ResponsiveContainerHelpers<TBreakpoints> = {
+    up(key, options) {
+      return wrapContainer(containerCondition(upQuery(key)), options?.name)
+    },
+    down(key, options) {
+      return wrapContainer(containerCondition(downQuery(key)), options?.name)
+    },
+    below(key, options) {
+      return wrapContainer(containerCondition(belowQuery(key)), options?.name)
+    },
+    only(key, options) {
+      return wrapContainer(containerCondition(onlyQuery(key)), options?.name)
+    },
+    between(from, to, options) {
+      return wrapContainer(containerCondition(between(from, to)), options?.name)
+    },
+    query(condition, options) {
+      return wrapContainer(condition, options?.name)
+    },
   }
 
   const query = (range: AliasRange<TBreakpoints>): string => {
@@ -294,6 +382,9 @@ export function createResponsive<const TBreakpoints extends BreakpointMap = type
     unit: merged.unit,
     step: merged.step,
     mediaType: merged.mediaType,
+    media: createMediaHelpers(),
+    container,
+    h5: createH5Helpers(),
     up: attachCallable(createQueryRecord(sorted, upQuery), upQuery),
     down: attachCallable(createQueryRecord(sorted, downQuery), downQuery),
     below: attachCallable(createQueryRecord(sorted, belowQuery), belowQuery),

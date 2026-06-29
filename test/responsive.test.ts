@@ -128,6 +128,55 @@ describe('responsive core query system', () => {
     expect(() => responsive.alias('unknown' as 'handheld')).toThrow('unknown alias')
   })
 
+  it('provides media feature helpers for device and accessibility preferences', () => {
+    const responsive = createResponsive()
+
+    expect(responsive.media.print()).toBe('@media print')
+    expect(responsive.media.colorScheme('dark')).toBe('@media (prefers-color-scheme: dark)')
+    expect(responsive.media.reducedMotion()).toBe('@media (prefers-reduced-motion: reduce)')
+    expect(responsive.media.reducedMotion('no-preference')).toBe('@media (prefers-reduced-motion: no-preference)')
+    expect(responsive.media.contrast()).toBe('@media (prefers-contrast: more)')
+    expect(responsive.media.contrast('less')).toBe('@media (prefers-contrast: less)')
+    expect(responsive.media.forcedColors()).toBe('@media (forced-colors: active)')
+    expect(responsive.media.forcedColors('none')).toBe('@media (forced-colors: none)')
+  })
+
+  it('provides container query helpers using breakpoint semantics', () => {
+    const responsive = createResponsive({
+      breakpoints: {
+        card: 0,
+        panel: 480,
+        shell: 960,
+      },
+      mediaType: 'screen',
+    })
+
+    expect(responsive.container.up('panel')).toBe('@container (min-width: 480px)')
+    expect(responsive.container.down('panel')).toBe('@container (max-width: 959px)')
+    expect(responsive.container.below('panel', { name: 'sidebar' })).toBe('@container sidebar (max-width: 479px)')
+    expect(responsive.container.only('panel')).toBe('@container (min-width: 480px) and (max-width: 959px)')
+    expect(responsive.container.between('panel', 'shell')).toBe('@container (min-width: 480px) and (max-width: 959px)')
+    expect(responsive.container.query('(inline-size > 40rem)', { name: 'content' })).toBe('@container content (inline-size > 40rem)')
+  })
+
+  it('provides H5 viewport and safe-area helpers', () => {
+    const responsive = createResponsive()
+
+    expect(responsive.h5.vw(37.5)).toBe('10vw')
+    expect(responsive.h5.vh(66.7, { viewport: 667, precision: 2 })).toBe('10vh')
+    expect(responsive.h5.vmin(18.75)).toBe('5vmin')
+    expect(responsive.h5.vmax(33.35, { viewport: 667, precision: 2 })).toBe('5vmax')
+    expect(responsive.h5.safeAreaInset('bottom')).toBe('env(safe-area-inset-bottom, 0px)')
+    expect(responsive.h5.safeAreaInset('top', { fallback: '12px' })).toBe('env(safe-area-inset-top, 12px)')
+    expect(responsive.h5.safeAreaPadding({ bottom: '16px', fallback: '4px' })).toEqual({
+      paddingTop: 'env(safe-area-inset-top, 4px)',
+      paddingRight: 'env(safe-area-inset-right, 4px)',
+      paddingBottom: '16px',
+      paddingLeft: 'env(safe-area-inset-left, 4px)',
+    })
+    expect(() => responsive.h5.vw(1, { viewport: 0 })).toThrow('positive finite number')
+  })
+
   it('merges preset options and lets user options override preset fields', () => {
     const preset = defineResponsivePreset({
       name: 'app',
