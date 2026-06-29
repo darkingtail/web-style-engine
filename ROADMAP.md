@@ -28,9 +28,11 @@ Implemented:
 - Transformer hook
 - H5 `px2rem` and `px2vw` transformers
 - CSS variables helper and scoped vars injection
+- Theme runtime protocol with scoped theme registration
+- Token alias resolution, derivative token helpers, token diff helpers, and CSS var fallbacks
 - Responsive module: breakpoints, media query helpers, media feature helpers, container query helpers, H5 helpers, responsive object output, observer
 - Vue / React / Solid minimal adapters
-- Astro docs site with Vue, React, and responsive landing examples
+- Astro docs site with Vue, React, responsive landing, and theme runtime examples
 
 Partially implemented:
 
@@ -43,9 +45,6 @@ Partially implemented:
 
 Not yet implemented:
 
-- Full theme runtime and providers
-- CSS vars fallback behavior
-- Token alias / derivative / diff engine
 - Production-grade hydration
 - Streaming SSR
 - Prefixer plugin

@@ -25,6 +25,7 @@ export default defineConfig({
             { label: 'Vue example', slug: 'examples/vue' },
             { label: 'React example', slug: 'examples/react' },
             { label: 'Responsive landing', slug: 'examples/responsive-landing' },
+            { label: 'Theme runtime', slug: 'examples/theme-runtime' },
           ],
         },
         {
@@ -32,6 +33,7 @@ export default defineConfig({
           items: [
             { label: 'Core', slug: 'api/core' },
             { label: 'Responsive', slug: 'api/responsive' },
+            { label: 'Theme and Tokens', slug: 'api/theme' },
             { label: 'Renderers', slug: 'api/renderers' },
             { label: 'createStylesCore', slug: 'api/create-styles-core' },
           ],

@@ -1,0 +1,71 @@
+---
+title: Theme and Tokens
+description: Framework-free theme runtime, token helpers, CSS variable fallbacks, aliases, derivatives, and diffs.
+---
+
+Theme and token APIs are framework-free. They are exported from `web-style-engine/theme`, `web-style-engine/tokens`, and the root package.
+
+## Theme Runtime
+
+```ts
+import { createStyleEngine, createThemeRuntime } from 'web-style-engine'
+
+const engine = createStyleEngine({ key: 'app' })
+const themes = createThemeRuntime({
+  engine,
+  prefix: 'app',
+  fallback: true,
+})
+
+const light = themes.registerTheme('light', {
+  color: {
+    primary: '#1677ff',
+    link: '{color.primary}',
+  },
+}, {
+  scope: ':root',
+})
+```
+
+`registerTheme()` resolves aliases, applies derivative token functions, injects scoped CSS variables through the engine, and returns a CSS var map.
+
+```ts
+light.vars['color-link']
+// var(--app-color-link, #1677ff)
+```
+
+## Scoped Themes
+
+```ts
+themes.registerTheme('dark', darkToken)
+// default scope: [data-theme="dark"]
+```
+
+Because scoped themes use `engine.vars()`, SSR renderers can extract the generated variables with the rest of the style output.
+
+## Token Helpers
+
+```ts
+resolveTokenAliases({
+  color: {
+    primary: '#1677ff',
+    link: '{color.primary}',
+  },
+})
+```
+
+```ts
+createDerivativeToken(seed, [
+  token => ({
+    color: {
+      primaryHover: `${token.color.primary}dd`,
+    },
+  }),
+])
+```
+
+```ts
+diffToken(previousToken, nextToken)
+```
+
+These helpers are design-system agnostic and do not encode antdv, antd, Arco, Naive UI, or any other component library rules.
