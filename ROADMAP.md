@@ -21,14 +21,16 @@ This is the main roadmap index for `web-style-engine`.
 Implemented:
 
 - Style engine core: `css`, `cx`, `keyframes`, `injectGlobal`, `vars`
+- Global font-face injection with `fontFace`
 - Registry, dedupe, stable class names, labels
 - DOM / SSR / Noop / Mock renderers
 - SSR extraction and style tag output
 - Transformer hook
+- H5 `px2rem` and `px2vw` transformers
 - CSS variables helper and scoped vars injection
-- Responsive module: breakpoints, media query helpers, responsive object output, observer
+- Responsive module: breakpoints, media query helpers, media feature helpers, container query helpers, H5 helpers, responsive object output, observer
 - Vue / React / Solid minimal adapters
-- Astro docs site with Vue and React examples
+- Astro docs site with Vue, React, and responsive landing examples
 
 Partially implemented:
 
@@ -36,7 +38,7 @@ Partially implemented:
 - CSS cascade layer support
 - Specificity control
 - Hydration hook
-- RTL and px2rem transformers
+- RTL transformer
 - Multi-instance isolation
 
 Not yet implemented:
@@ -44,9 +46,6 @@ Not yet implemented:
 - Full theme runtime and providers
 - CSS vars fallback behavior
 - Token alias / derivative / diff engine
-- Media feature helpers
-- Container query helpers
-- `fontFace`
 - Production-grade hydration
 - Streaming SSR
 - Prefixer plugin

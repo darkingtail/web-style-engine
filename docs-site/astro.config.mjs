@@ -8,7 +8,7 @@ export default defineConfig({
   integrations: [
     starlight({
       title: 'web-style-engine',
-      description: 'A framework-agnostic style engine for Web UI.',
+      description: 'A framework-agnostic enterprise-grade Web style engine.',
       sidebar: [
         {
           label: 'Guide',
@@ -24,12 +24,14 @@ export default defineConfig({
           items: [
             { label: 'Vue example', slug: 'examples/vue' },
             { label: 'React example', slug: 'examples/react' },
+            { label: 'Responsive landing', slug: 'examples/responsive-landing' },
           ],
         },
         {
           label: 'API',
           items: [
             { label: 'Core', slug: 'api/core' },
+            { label: 'Responsive', slug: 'api/responsive' },
             { label: 'Renderers', slug: 'api/renderers' },
             { label: 'createStylesCore', slug: 'api/create-styles-core' },
           ],
