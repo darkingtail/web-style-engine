@@ -70,6 +70,11 @@ export interface StyleEngineOptions {
   renderer?: StyleRenderer
   registry?: StyleRegistry
   transformers?: StyleTransformer[]
+  container?: Document | Element | ShadowRoot
+  nonce?: string
+  insertionPoint?: ChildNode | null
+  layer?: string
+  specificity?: 'normal' | 'low' | 'high'
   dev?: boolean
 }
 
@@ -78,6 +83,7 @@ export interface StyleEngine {
   css(input: StyleInput, options?: StyleOptions): string
   cx(...classNames: ClassValue[]): string
   keyframes(input: StyleInput, options?: StyleOptions): string
+  fontFace(input: StyleInput, options?: GlobalStyleOptions): string | void
   injectGlobal(input: StyleInput, options?: GlobalStyleOptions): string | void
   vars(tokens: Record<string, unknown>, options?: CSSVarsOptions): string | void
   vars(scope: string, tokens: Record<string, unknown>, options?: CSSVarsOptions): string | void

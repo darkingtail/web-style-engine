@@ -79,28 +79,24 @@ export function serializeCSSObject(input: CSSObject): string {
 
 export function wrapClassRule(selector: string, cssText: string): string {
   const trimmed = cssText.trim()
-  if (!trimmed.includes('@')) return `${selector}{${trimmed}}`
+  if (!trimmed.includes('@') && !trimmed.includes('{')) return `${selector}{${trimmed}}`
 
   let declarations = ''
-  let atRules = ''
+  let nestedRules = ''
   let index = 0
 
   while (index < trimmed.length) {
-    const atIndex = trimmed.indexOf('@', index)
-    if (atIndex === -1) {
+    const blockIndex = trimmed.indexOf('{', index)
+    if (blockIndex === -1) {
       declarations += trimmed.slice(index)
       break
     }
 
-    declarations += trimmed.slice(index, atIndex)
-    const openIndex = trimmed.indexOf('{', atIndex)
-    if (openIndex === -1) {
-      declarations += trimmed.slice(atIndex)
-      break
-    }
+    const preludeStart = findPreludeStart(trimmed, blockIndex)
+    declarations += trimmed.slice(index, preludeStart)
 
     let depth = 0
-    let closeIndex = openIndex
+    let closeIndex = blockIndex
     for (; closeIndex < trimmed.length; closeIndex++) {
       const char = trimmed[closeIndex]
       if (char === '{') depth++
@@ -108,14 +104,28 @@ export function wrapClassRule(selector: string, cssText: string): string {
       if (depth === 0) break
     }
 
-    const prelude = trimmed.slice(atIndex, openIndex)
-    const body = trimmed.slice(openIndex + 1, closeIndex)
-    atRules += `${prelude}{${selector}{${body}}}`
+    const prelude = trimmed.slice(preludeStart, blockIndex).trim()
+    const body = trimmed.slice(blockIndex + 1, closeIndex)
+    nestedRules += wrapNestedRule(selector, prelude, body)
     index = closeIndex + 1
   }
 
   const baseRule = declarations.trim() ? `${selector}{${declarations.trim()}}` : ''
-  return `${baseRule}${atRules}`
+  return `${baseRule}${nestedRules}`
+}
+
+function findPreludeStart(cssText: string, openIndex: number): number {
+  const previousDeclaration = cssText.lastIndexOf(';', openIndex)
+  const previousBlock = cssText.lastIndexOf('}', openIndex)
+  return Math.max(previousDeclaration, previousBlock) + 1
+}
+
+function wrapNestedRule(selector: string, prelude: string, body: string): string {
+  if (prelude.startsWith('@')) return `${prelude}{${wrapClassRule(selector, body)}}`
+  const nestedSelector = prelude.includes('&')
+    ? prelude.replace(/&/g, selector)
+    : `${selector} ${prelude}`
+  return wrapClassRule(nestedSelector, body)
 }
 
 export function cx(...classNames: ClassValue[]): string {

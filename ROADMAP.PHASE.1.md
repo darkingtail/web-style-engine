@@ -8,27 +8,35 @@ Make the style engine core reliable enough for real applications.
 
 ## Tasks
 
-- Add top-level `StyleEngineOptions` convenience fields:
+- [x] Add top-level `StyleEngineOptions` convenience fields:
   - `container`
   - `nonce`
   - `insertionPoint`
   - `layer`
   - `specificity`
-- Keep renderer-level options as the lower-level escape hatch.
-- Complete style serialization support:
+- [x] Keep renderer-level options as the lower-level escape hatch.
+- [x] Complete style serialization support:
   - declarations
   - nested selectors
   - `@media`
   - `@supports`
   - `@layer`
-- Add `fontFace`.
-- Strengthen `dispose` and `flush` tests.
-- Add DOM renderer tests for:
+- [x] Add `fontFace`.
+- [x] Strengthen `dispose` and `flush` tests.
+- [ ] Add DOM renderer tests for:
   - ShadowRoot container
   - iframe-like document container
-  - nonce
-  - insertion point
-- Document core usage and renderer options.
+  - [x] nonce
+  - [x] insertion point
+- [x] Document core usage and renderer options.
+
+## Progress
+
+- Added top-level DOM renderer convenience options to `createStyleEngine`.
+- Added default `layer` and `specificity` handling.
+- Added `fontFace`.
+- Improved nested selector and at-rule serialization.
+- Added tests for responsive style output through `createStylesCore`, top-level DOM renderer options, and cleanup APIs.
 
 ## Acceptance
 
@@ -37,4 +45,3 @@ Make the style engine core reliable enough for real applications.
 - `pnpm test`
 - `pnpm docs:build`
 - Tests cover DOM, SSR, Noop, Mock, and renderer options.
-

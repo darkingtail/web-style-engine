@@ -1,15 +1,37 @@
 import type { CSSVarsOptions, GlobalStyleOptions, StyleEngine, StyleEngineOptions, StyleInput, StyleOptions, StyleRule } from './types'
 import { createStyleRegistry } from './registry'
 import { cx, hashString, sanitizeLabel, serializeStyleInput, wrapClassRule } from './serialize'
+import { createDOMRenderer } from '../renderers/dom'
 import { createNoopRenderer } from '../renderers/noop'
 import { flattenToken, tokenPathToVarName } from '../tokens/css-vars'
 
 export function createStyleEngine(options: StyleEngineOptions = {}): StyleEngine {
   const key = options.key ?? 'wse'
-  const renderer = options.renderer ?? createNoopRenderer()
+  const createDOMRendererOptions = () => {
+    const rendererOptions: Parameters<typeof createDOMRenderer>[0] = { key }
+    if (options.container !== undefined) rendererOptions.container = options.container
+    if (options.nonce !== undefined) rendererOptions.nonce = options.nonce
+    if (options.insertionPoint !== undefined) rendererOptions.insertionPoint = options.insertionPoint
+    return rendererOptions
+  }
+  const hasDOMRendererOptions = options.container !== undefined || options.nonce !== undefined || options.insertionPoint !== undefined
+  const renderer = options.renderer ?? (hasDOMRendererOptions ? createDOMRenderer(createDOMRendererOptions()) : createNoopRenderer())
   const registry = options.registry ?? createStyleRegistry()
   const transformers = options.transformers ?? []
   const dev = options.dev ?? process.env.NODE_ENV !== 'production'
+
+  const withStyleDefaults = (styleOptions: StyleOptions = {}): StyleOptions => {
+    const next: StyleOptions = { ...styleOptions }
+    if (next.layer === undefined && options.layer !== undefined) next.layer = options.layer
+    if (next.specificity === undefined && options.specificity !== undefined) next.specificity = options.specificity
+    return next
+  }
+
+  const withGlobalDefaults = <TOptions extends GlobalStyleOptions>(globalOptions: TOptions = {} as TOptions): TOptions => {
+    const next: TOptions = { ...globalOptions }
+    if (next.layer === undefined && options.layer !== undefined) next.layer = options.layer
+    return next
+  }
 
   const transform = (cssText: string, styleOptions?: StyleOptions | GlobalStyleOptions): string => {
     const context = styleOptions ? { engineKey: key, options: styleOptions } : { engineKey: key }
@@ -44,11 +66,16 @@ export function createStyleEngine(options: StyleEngineOptions = {}): StyleEngine
   const engine: StyleEngine = {
     key,
     css(input: StyleInput, styleOptions: StyleOptions = {}) {
+      styleOptions = withStyleDefaults(styleOptions)
       const body = transform(serializeStyleInput(input), styleOptions)
       const id = hashString(`${key}|css|${styleOptions.layer ?? ''}|${styleOptions.specificity ?? ''}|${body}`)
       const label = styleOptions.label && dev ? `-${sanitizeLabel(styleOptions.label)}` : ''
       const className = `${key}${label}-${id}`
-      const selector = styleOptions.specificity === 'low' ? `:where(.${className})` : `.${className}`
+      const selector = styleOptions.specificity === 'low'
+        ? `:where(.${className})`
+        : styleOptions.specificity === 'high'
+          ? `.${className}.${className}`
+          : `.${className}`
       const cssText = styleOptions.layer ? `@layer ${styleOptions.layer}{${wrapClassRule(selector, body)}}` : wrapClassRule(selector, body)
 
       insertRule(createRule({
@@ -64,6 +91,7 @@ export function createStyleEngine(options: StyleEngineOptions = {}): StyleEngine
     },
     cx,
     keyframes(input: StyleInput, styleOptions: StyleOptions = {}) {
+      styleOptions = withStyleDefaults(styleOptions)
       const body = transform(serializeStyleInput(input), styleOptions)
       const id = hashString(`${key}|keyframes|${body}`)
       const label = styleOptions.label && dev ? `-${sanitizeLabel(styleOptions.label)}` : ''
@@ -76,7 +104,22 @@ export function createStyleEngine(options: StyleEngineOptions = {}): StyleEngine
       }))
       return name
     },
+    fontFace(input: StyleInput, globalOptions: GlobalStyleOptions = {}) {
+      globalOptions = withGlobalDefaults(globalOptions)
+      const body = transform(serializeStyleInput(input), globalOptions)
+      const id = globalOptions.id ?? `font-face-${hashString(`${key}|font-face|${body}`)}`
+      const cssText = globalOptions.layer ? `@layer ${globalOptions.layer}{@font-face{${body}}}` : `@font-face{${body}}`
+      insertRule(createRule({
+        id,
+        cssText,
+        layer: globalOptions.layer,
+        priority: globalOptions.priority,
+        metadata: globalOptions.metadata,
+      }))
+      return id
+    },
     injectGlobal(input: StyleInput, globalOptions: GlobalStyleOptions = {}) {
+      globalOptions = withGlobalDefaults(globalOptions)
       const body = transform(serializeStyleInput(input), globalOptions)
       const id = globalOptions.id ?? `global-${hashString(`${key}|global|${body}`)}`
       const cssText = globalOptions.layer ? `@layer ${globalOptions.layer}{${body}}` : body
@@ -92,7 +135,7 @@ export function createStyleEngine(options: StyleEngineOptions = {}): StyleEngine
     vars(scopeOrTokens: string | Record<string, unknown>, maybeTokens?: Record<string, unknown> | CSSVarsOptions, maybeOptions?: CSSVarsOptions) {
       const scope = typeof scopeOrTokens === 'string' ? scopeOrTokens : ':root'
       const tokens = typeof scopeOrTokens === 'string' ? (maybeTokens as Record<string, unknown>) : scopeOrTokens
-      const varsOptions = (typeof scopeOrTokens === 'string' ? maybeOptions : maybeTokens) as CSSVarsOptions | undefined
+      const varsOptions = withGlobalDefaults((typeof scopeOrTokens === 'string' ? maybeOptions : maybeTokens) as CSSVarsOptions | undefined)
       const prefix = varsOptions?.prefix ?? key
       const flat = flattenToken(tokens)
       const body = Object.entries(flat)

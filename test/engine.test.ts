@@ -1,6 +1,45 @@
 import { describe, expect, it } from 'vitest'
 import { createStyleEngine, createMockRenderer, createSSRRenderer, createStylesCore, createVueStyleSystem, createReactStyleSystem, createSolidStyleSystem, createResponsive, px2rem } from '../src'
 
+function createFakeDOM() {
+  const createElement = (tagName: string) => ({
+    tagName,
+    attributes: new Map<string, string>(),
+    childNodes: [] as any[],
+    parentNode: undefined as any,
+    textContent: '',
+    ownerDocument: undefined as any,
+    setAttribute(name: string, value: string) {
+      this.attributes.set(name, value)
+    },
+    getAttribute(name: string) {
+      return this.attributes.get(name)
+    },
+    appendChild(child: any) {
+      child.parentNode = this
+      this.childNodes.push(child)
+      return child
+    },
+    insertBefore(child: any, reference: any) {
+      child.parentNode = this
+      const index = this.childNodes.indexOf(reference)
+      if (index >= 0) this.childNodes.splice(index, 0, child)
+      else this.childNodes.push(child)
+      return child
+    },
+  })
+  const document = {
+    createElement(tagName: string) {
+      const element = createElement(tagName)
+      element.ownerDocument = document
+      return element
+    },
+    head: undefined as any,
+  }
+  document.head = document.createElement('head')
+  return document
+}
+
 describe('web-style-engine first slice', () => {
   it('creates stable class names, dedupes rules, and extracts styles', () => {
     const renderer = createMockRenderer()
@@ -83,6 +122,75 @@ describe('web-style-engine first slice', () => {
     const cssText = renderer.extract().cssText
     expect(cssText).toContain('--test-color-primary:#1677ff')
     expect(cssText).toContain('margin-left:1rem')
+  })
+
+  it('supports default layer, specificity, fontFace, and nested at-rules', () => {
+    const renderer = createMockRenderer()
+    const engine = createStyleEngine({
+      key: 'test',
+      renderer,
+      layer: 'components',
+      specificity: 'low',
+    })
+
+    const className = engine.css({
+      color: 'red',
+      '&:hover': {
+        color: 'blue',
+      },
+      '.icon': {
+        color: 'green',
+      },
+      '@supports (display: grid)': {
+        display: 'grid',
+      },
+    })
+    engine.fontFace({
+      fontFamily: 'Demo',
+      src: 'url(/demo.woff2)',
+    })
+
+    const cssText = renderer.extract().cssText
+    expect(cssText).toContain(`@layer components{:where(.${className}){color:red;}`)
+    expect(cssText).toContain(`:where(.${className}):hover{color:blue;}`)
+    expect(cssText).toContain(`:where(.${className}) .icon{color:green;}`)
+    expect(cssText).toContain(`@supports (display: grid){:where(.${className}){display:grid;}}`)
+    expect(cssText).toContain('@font-face{font-family:Demo;src:url(/demo.woff2);}')
+  })
+
+  it('creates a DOM renderer from top-level engine options', () => {
+    const fakeDocument = createFakeDOM()
+    const insertionPoint = fakeDocument.createElement('meta')
+    fakeDocument.head.appendChild(insertionPoint)
+
+    const engine = createStyleEngine({
+      key: 'domtest',
+      container: fakeDocument,
+      nonce: 'abc',
+      insertionPoint,
+    })
+
+    engine.css({ color: 'red' })
+
+    expect(fakeDocument.head.childNodes).toHaveLength(2)
+    const styleElement = fakeDocument.head.childNodes[1]
+    expect(styleElement.getAttribute('nonce')).toBe('abc')
+    expect(styleElement.getAttribute('data-domtest')).toBe('domtest')
+    expect(styleElement.textContent).toContain('color:red')
+  })
+
+  it('disposes and flushes inserted rules', () => {
+    const renderer = createMockRenderer()
+    const engine = createStyleEngine({ key: 'test', renderer })
+    const className = engine.css({ color: 'red' })
+    const rule = renderer.rules.find(item => item.className === className)!
+
+    engine.dispose(rule.id)
+    expect(renderer.extract().cssText).not.toContain('color:red')
+
+    engine.css({ color: 'blue' })
+    engine.flush()
+    expect(renderer.extract().cssText).toBe('')
   })
 
   it('creates minimal Vue, React, and Solid adapters over the same core', () => {
