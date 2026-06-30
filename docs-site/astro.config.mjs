@@ -44,7 +44,10 @@ export default defineConfig({
         },
         {
           label: 'Migration',
-          items: [{ label: 'antdv-style', slug: 'migration/antdv-style' }],
+          items: [
+            { label: 'antdv-style', slug: 'migration/antdv-style' },
+            { label: 'Release and API policy', slug: 'migration/release-policy' },
+          ],
         },
       ],
     }),

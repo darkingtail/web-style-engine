@@ -1,0 +1,40 @@
+---
+title: Release and API policy
+description: Release strategy and API stability policy for ecosystem adopters.
+---
+
+`web-style-engine` uses SemVer.
+
+## Channels
+
+- `canary` for early integration checks
+- `latest` for stable releases
+
+## Required Checks
+
+```txt
+pnpm run typecheck
+pnpm run build
+pnpm test
+pnpm docs:build
+```
+
+## Stable APIs
+
+- core `StyleEngine` protocol
+- renderers
+- responsive helpers
+- theme runtime
+- framework adapter protocol
+- plugin protocol
+- migration boundary helpers
+
+## Experimental APIs
+
+- atomic mode
+- static extraction metadata
+- streaming SSR chunks
+
+Experimental APIs can change in minor versions until promoted. Breaking changes to stable APIs require a major version.
+
+Design-system-specific logic must stay outside core. It should live in adapters such as `antdv-style` or in the `web-style-engine/migration` boundary helpers.
