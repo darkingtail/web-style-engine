@@ -7,6 +7,10 @@ export interface DOMRendererOptions {
   insertionPoint?: ChildNode | null
 }
 
+function isStyleElement(node: unknown): node is HTMLStyleElement {
+  return !!node && typeof node === 'object' && 'textContent' in node && 'getAttribute' in node
+}
+
 export function createDOMRenderer(options: DOMRendererOptions = {}): StyleRenderer {
   const key = options.key ?? 'wse'
   const rules = new Map<string, StyleRule>()
@@ -21,6 +25,13 @@ export function createDOMRenderer(options: DOMRendererOptions = {}): StyleRender
       throw new Error('createDOMRenderer requires a container when document is unavailable')
     }
     return document.head
+  }
+
+  const getHydratableNodes = (source?: unknown): HTMLStyleElement[] => {
+    if (source && typeof source !== 'string') return Array.from(source as Iterable<unknown>).filter(isStyleElement)
+    const container = getContainer()
+    const childNodes = 'childNodes' in container ? Array.from(container.childNodes as ArrayLike<unknown>) : []
+    return childNodes.filter(isStyleElement).filter(node => node.getAttribute(`data-${key}`) === key)
   }
 
   const ensureStyleElement = (): HTMLStyleElement => {
@@ -61,12 +72,22 @@ export function createDOMRenderer(options: DOMRendererOptions = {}): StyleRender
       if (styleElement) styleElement.textContent = ''
     },
     hydrate(source?: unknown) {
-      if (!source || typeof source === 'string') return
-      const nodes = source as Iterable<HTMLStyleElement>
+      const nodes = getHydratableNodes(source)
       for (const node of nodes) {
-        if (node.textContent) {
-          rules.set(`hydrated-${rules.size}`, {
-            id: `hydrated-${rules.size}`,
+        if (styleElement === undefined) styleElement = node
+        const ids = node.getAttribute(`data-${key}-ids`)?.split(/\s+/).filter(Boolean) ?? []
+        if (ids.length > 0) {
+          ids.forEach((id, index) => {
+            rules.set(id, {
+              id,
+              cssText: index === 0 ? (node.textContent ?? '') : '',
+              metadata: { hydrated: true },
+            })
+          })
+        } else if (node.textContent) {
+          const id = `hydrated-${rules.size}`
+          rules.set(id, {
+            id,
             cssText: node.textContent,
             metadata: { hydrated: true },
           })

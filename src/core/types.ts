@@ -39,6 +39,7 @@ export interface ExtractedStyle {
   cssText: string
   rules: StyleRule[]
   styleTags?: string
+  criticalCss?: string
 }
 
 export interface StyleRenderer {
