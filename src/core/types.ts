@@ -35,6 +35,23 @@ export interface StyleRule {
   metadata?: Record<string, unknown>
 }
 
+export type StyleEngineMode = 'block' | 'atomic'
+export type StyleExtractionMode = 'runtime' | 'static' | 'hybrid'
+
+export interface StyleRuleSnapshot {
+  id: string
+  className?: string
+  cssText: string
+  layer?: string
+  priority?: number
+  metadata?: Record<string, unknown>
+}
+
+export interface ClassNameInspection {
+  className: string
+  rules: StyleRuleSnapshot[]
+}
+
 export interface ExtractedStyle {
   cssText: string
   rules: StyleRule[]
@@ -94,6 +111,8 @@ export interface StyleEngineOptions {
   insertionPoint?: ChildNode | null
   layer?: string
   specificity?: 'normal' | 'low' | 'high'
+  mode?: StyleEngineMode
+  extractionMode?: StyleExtractionMode
   diagnostics?: boolean
   dev?: boolean
 }
@@ -112,6 +131,9 @@ export interface StyleEngine {
   hydrate(source?: unknown): void
   extract(): ExtractedStyle
   getRegistry(): StyleRegistry
+  getRule(id: string): StyleRule | undefined
+  inspectClassName(className: string): ClassNameInspection
+  snapshotRules(): StyleRuleSnapshot[]
   getDiagnostics(): StyleTransformDiagnostic[]
   clearDiagnostics(): void
 }

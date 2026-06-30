@@ -1,4 +1,4 @@
-import type { CSSVarsOptions, GlobalStyleOptions, StyleEngine, StyleEngineOptions, StyleInput, StyleOptions, StyleRule, StyleTransform, StyleTransformDiagnostic } from './types'
+import type { CSSVarsOptions, GlobalStyleOptions, StyleEngine, StyleEngineOptions, StyleInput, StyleOptions, StyleRule, StyleRuleSnapshot, StyleTransform, StyleTransformDiagnostic } from './types'
 import { createStyleRegistry } from './registry'
 import { cx, hashString, sanitizeLabel, serializeStyleInput, wrapClassRule } from './serialize'
 import { createDOMRenderer } from '../renderers/dom'
@@ -19,7 +19,9 @@ export function createStyleEngine(options: StyleEngineOptions = {}): StyleEngine
   const registry = options.registry ?? createStyleRegistry()
   const transforms = normalizeTransforms(options.transformers, options.plugins)
   const diagnostics: StyleTransformDiagnostic[] = []
-  const dev = options.dev ?? process.env.NODE_ENV !== 'production'
+  const dev = options.dev ?? !isProductionRuntime()
+  const mode = options.mode ?? 'block'
+  const extractionMode = options.extractionMode ?? 'runtime'
 
   const withStyleDefaults = (styleOptions: StyleOptions = {}): StyleOptions => {
     const next: StyleOptions = { ...styleOptions }
@@ -57,6 +59,18 @@ export function createStyleEngine(options: StyleEngineOptions = {}): StyleEngine
     renderer.insert(rule)
   }
 
+  const toSnapshot = (rule: StyleRule): StyleRuleSnapshot => {
+    const snapshot: StyleRuleSnapshot = {
+      id: rule.id,
+      cssText: rule.cssText,
+    }
+    if (rule.className !== undefined) snapshot.className = rule.className
+    if (rule.layer !== undefined) snapshot.layer = rule.layer
+    if (rule.priority !== undefined) snapshot.priority = rule.priority
+    if (rule.metadata !== undefined) snapshot.metadata = JSON.parse(JSON.stringify(rule.metadata)) as Record<string, unknown>
+    return snapshot
+  }
+
   const createRule = (rule: {
     id: string
     className?: string | undefined
@@ -81,6 +95,37 @@ export function createStyleEngine(options: StyleEngineOptions = {}): StyleEngine
     css(input: StyleInput, styleOptions: StyleOptions = {}) {
       styleOptions = withStyleDefaults(styleOptions)
       const body = transform(serializeStyleInput(input), styleOptions)
+      if (mode === 'atomic' && canUseAtomic(body)) {
+        const declarations = splitDeclarations(body)
+        const classNames = declarations.map((declaration) => {
+          const id = hashString(`${key}|atomic|${styleOptions.layer ?? ''}|${styleOptions.specificity ?? ''}|${declaration}`)
+          const label = styleOptions.label && dev ? `-${sanitizeLabel(styleOptions.label)}` : ''
+          const className = `${key}${label}-${id}`
+          const selector = styleOptions.specificity === 'low'
+            ? `:where(.${className})`
+            : styleOptions.specificity === 'high'
+              ? `.${className}.${className}`
+              : `.${className}`
+          const cssText = styleOptions.layer ? `@layer ${styleOptions.layer}{${wrapClassRule(selector, declaration)}}` : wrapClassRule(selector, declaration)
+          insertRule(createRule({
+            id,
+            className,
+            cssText,
+            layer: styleOptions.layer,
+            priority: styleOptions.priority,
+            metadata: {
+              ...styleOptions.metadata,
+              mode,
+              extractionMode,
+              atomic: true,
+              declaration,
+              label: styleOptions.label,
+            },
+          }))
+          return className
+        })
+        return cx(...classNames)
+      }
       const id = hashString(`${key}|css|${styleOptions.layer ?? ''}|${styleOptions.specificity ?? ''}|${body}`)
       const label = styleOptions.label && dev ? `-${sanitizeLabel(styleOptions.label)}` : ''
       const className = `${key}${label}-${id}`
@@ -97,7 +142,12 @@ export function createStyleEngine(options: StyleEngineOptions = {}): StyleEngine
         cssText,
         layer: styleOptions.layer,
         priority: styleOptions.priority,
-        metadata: styleOptions.metadata,
+        metadata: {
+          ...styleOptions.metadata,
+          mode,
+          extractionMode,
+          label: styleOptions.label,
+        },
       }))
 
       return className
@@ -184,6 +234,21 @@ export function createStyleEngine(options: StyleEngineOptions = {}): StyleEngine
     getRegistry() {
       return registry
     },
+    getRule(id: string) {
+      return registry.get(id)
+    },
+    inspectClassName(className: string) {
+      const classSet = new Set(className.split(/\s+/).filter(Boolean))
+      return {
+        className,
+        rules: registry.values()
+          .filter(rule => rule.className !== undefined && classSet.has(rule.className))
+          .map(toSnapshot),
+      }
+    },
+    snapshotRules() {
+      return registry.values().map(toSnapshot)
+    },
     getDiagnostics() {
       return [...diagnostics]
     },
@@ -193,6 +258,22 @@ export function createStyleEngine(options: StyleEngineOptions = {}): StyleEngine
   }
 
   return engine
+}
+
+function isProductionRuntime(): boolean {
+  return typeof process !== 'undefined' && process.env?.NODE_ENV === 'production'
+}
+
+function canUseAtomic(cssText: string): boolean {
+  return cssText.trim().length > 0 && !cssText.includes('{') && !cssText.includes('}')
+}
+
+function splitDeclarations(cssText: string): string[] {
+  return cssText
+    .split(';')
+    .map(part => part.trim())
+    .filter(Boolean)
+    .map(part => `${part};`)
 }
 
 function normalizeTransforms(transformers: StyleTransform[] = [], plugins: NonNullable<StyleEngineOptions['plugins']> = []) {
