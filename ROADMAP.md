@@ -28,12 +28,13 @@ Implemented:
 - Transformer/plugin protocol with deterministic ordering and diagnostics
 - H5 `px2rem` and `px2vw` transformers
 - RTL transformer and focused prefixer plugin
+- Explicit advanced modes: block/atomic runtime, static/hybrid extraction metadata, class inspection, serializable snapshots
 - CSS variables helper and scoped vars injection
 - Theme runtime protocol with scoped theme registration
 - Token alias resolution, derivative token helpers, token diff helpers, and CSS var fallbacks
 - Responsive module: breakpoints, media query helpers, media feature helpers, container query helpers, H5 helpers, responsive object output, observer
 - Vue / React / Solid adapters with provider-style scopes, hook/composable style helpers, reactive theme sources, and responsive external-store bridge
-- Astro docs site with Vue, React, responsive landing, theme runtime, and SSR/hydration examples
+- Astro docs site with Vue, React, responsive landing, theme runtime, SSR/hydration, and advanced modes examples
 
 Partially implemented:
 
@@ -44,9 +45,6 @@ Partially implemented:
 
 Not yet implemented:
 
-- Atomic CSS mode
-- Static extraction
-- Low-code inspect APIs
 
 ## Phase Index
 
