@@ -1,4 +1,4 @@
-import type { CSSVarsOptions, GlobalStyleOptions, StyleEngine, StyleEngineOptions, StyleInput, StyleOptions, StyleRule } from './types'
+import type { CSSVarsOptions, GlobalStyleOptions, StyleEngine, StyleEngineOptions, StyleInput, StyleOptions, StyleRule, StyleTransform, StyleTransformDiagnostic } from './types'
 import { createStyleRegistry } from './registry'
 import { cx, hashString, sanitizeLabel, serializeStyleInput, wrapClassRule } from './serialize'
 import { createDOMRenderer } from '../renderers/dom'
@@ -17,7 +17,8 @@ export function createStyleEngine(options: StyleEngineOptions = {}): StyleEngine
   const hasDOMRendererOptions = options.container !== undefined || options.nonce !== undefined || options.insertionPoint !== undefined
   const renderer = options.renderer ?? (hasDOMRendererOptions ? createDOMRenderer(createDOMRendererOptions()) : createNoopRenderer())
   const registry = options.registry ?? createStyleRegistry()
-  const transformers = options.transformers ?? []
+  const transforms = normalizeTransforms(options.transformers, options.plugins)
+  const diagnostics: StyleTransformDiagnostic[] = []
   const dev = options.dev ?? process.env.NODE_ENV !== 'production'
 
   const withStyleDefaults = (styleOptions: StyleOptions = {}): StyleOptions => {
@@ -34,8 +35,20 @@ export function createStyleEngine(options: StyleEngineOptions = {}): StyleEngine
   }
 
   const transform = (cssText: string, styleOptions?: StyleOptions | GlobalStyleOptions): string => {
-    const context = styleOptions ? { engineKey: key, options: styleOptions } : { engineKey: key }
-    return transformers.reduce((current, transformer) => transformer(current, context), cssText)
+    return transforms.reduce((current, item) => {
+      const context = styleOptions ? { engineKey: key, options: styleOptions, pluginName: item.name } : { engineKey: key, pluginName: item.name }
+      const next = item.transform(current, context)
+      if (options.diagnostics || dev) {
+        diagnostics.push({
+          pluginName: item.name,
+          before: current,
+          after: next,
+          changed: current !== next,
+          ...(styleOptions ? { options: styleOptions } : {}),
+        })
+      }
+      return next
+    }, cssText)
   }
 
   const insertRule = (rule: StyleRule): void => {
@@ -171,7 +184,34 @@ export function createStyleEngine(options: StyleEngineOptions = {}): StyleEngine
     getRegistry() {
       return registry
     },
+    getDiagnostics() {
+      return [...diagnostics]
+    },
+    clearDiagnostics() {
+      diagnostics.splice(0, diagnostics.length)
+    },
   }
 
   return engine
+}
+
+function normalizeTransforms(transformers: StyleTransform[] = [], plugins: NonNullable<StyleEngineOptions['plugins']> = []) {
+  return [...transformers, ...plugins]
+    .map((item, index) => {
+      if (typeof item === 'function') {
+        return {
+          name: `transformer-${index}`,
+          order: 0,
+          index,
+          transform: item,
+        }
+      }
+      return {
+        name: item.name,
+        order: item.order ?? 0,
+        index,
+        transform: item.transform,
+      }
+    })
+    .sort((a, b) => a.order - b.order || a.index - b.index)
 }

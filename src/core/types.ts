@@ -62,20 +62,39 @@ export interface StyleRegistry {
 export interface StyleTransformerContext {
   engineKey: string
   options?: StyleOptions | GlobalStyleOptions
+  pluginName?: string
 }
 
 export type StyleTransformer = (cssText: string, context: StyleTransformerContext) => string
+
+export interface StylePlugin {
+  name: string
+  order?: number
+  transform: StyleTransformer
+}
+
+export type StyleTransform = StyleTransformer | StylePlugin
+
+export interface StyleTransformDiagnostic {
+  pluginName: string
+  before: string
+  after: string
+  changed: boolean
+  options?: StyleOptions | GlobalStyleOptions
+}
 
 export interface StyleEngineOptions {
   key?: string
   renderer?: StyleRenderer
   registry?: StyleRegistry
-  transformers?: StyleTransformer[]
+  transformers?: StyleTransform[]
+  plugins?: StylePlugin[]
   container?: Document | Element | ShadowRoot
   nonce?: string
   insertionPoint?: ChildNode | null
   layer?: string
   specificity?: 'normal' | 'low' | 'high'
+  diagnostics?: boolean
   dev?: boolean
 }
 
@@ -93,6 +112,8 @@ export interface StyleEngine {
   hydrate(source?: unknown): void
   extract(): ExtractedStyle
   getRegistry(): StyleRegistry
+  getDiagnostics(): StyleTransformDiagnostic[]
+  clearDiagnostics(): void
 }
 
 export interface CSSVarsOptions extends GlobalStyleOptions {
