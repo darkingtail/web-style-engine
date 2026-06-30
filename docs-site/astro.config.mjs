@@ -35,6 +35,7 @@ export default defineConfig({
             { label: 'Responsive', slug: 'api/responsive' },
             { label: 'Theme and Tokens', slug: 'api/theme' },
             { label: 'Framework Adapters', slug: 'api/adapters' },
+            { label: 'SSR and Hydration', slug: 'api/ssr-hydration' },
             { label: 'Renderers', slug: 'api/renderers' },
             { label: 'createStylesCore', slug: 'api/create-styles-core' },
           ],

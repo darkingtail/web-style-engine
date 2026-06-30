@@ -24,7 +24,7 @@ Implemented:
 - Global font-face injection with `fontFace`
 - Registry, dedupe, stable class names, labels
 - DOM / SSR / Noop / Mock renderers
-- SSR extraction and style tag output
+- SSR extraction, hydration metadata, critical CSS extraction, and streaming chunk protocol
 - Transformer hook
 - H5 `px2rem` and `px2vw` transformers
 - CSS variables helper and scoped vars injection
@@ -32,21 +32,18 @@ Implemented:
 - Token alias resolution, derivative token helpers, token diff helpers, and CSS var fallbacks
 - Responsive module: breakpoints, media query helpers, media feature helpers, container query helpers, H5 helpers, responsive object output, observer
 - Vue / React / Solid adapters with provider-style scopes, hook/composable style helpers, reactive theme sources, and responsive external-store bridge
-- Astro docs site with Vue, React, responsive landing, and theme runtime examples
+- Astro docs site with Vue, React, responsive landing, theme runtime, and SSR/hydration examples
 
 Partially implemented:
 
 - CSS nesting and at-rule serialization
 - CSS cascade layer support
 - Specificity control
-- Hydration hook
 - RTL transformer
 - Multi-instance isolation
 
 Not yet implemented:
 
-- Production-grade hydration
-- Streaming SSR
 - Prefixer plugin
 - Atomic CSS mode
 - Static extraction
