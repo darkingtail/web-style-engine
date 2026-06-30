@@ -25,8 +25,9 @@ Implemented:
 - Registry, dedupe, stable class names, labels
 - DOM / SSR / Noop / Mock renderers
 - SSR extraction, hydration metadata, critical CSS extraction, and streaming chunk protocol
-- Transformer hook
+- Transformer/plugin protocol with deterministic ordering and diagnostics
 - H5 `px2rem` and `px2vw` transformers
+- RTL transformer and focused prefixer plugin
 - CSS variables helper and scoped vars injection
 - Theme runtime protocol with scoped theme registration
 - Token alias resolution, derivative token helpers, token diff helpers, and CSS var fallbacks
@@ -39,12 +40,10 @@ Partially implemented:
 - CSS nesting and at-rule serialization
 - CSS cascade layer support
 - Specificity control
-- RTL transformer
 - Multi-instance isolation
 
 Not yet implemented:
 
-- Prefixer plugin
 - Atomic CSS mode
 - Static extraction
 - Low-code inspect APIs
