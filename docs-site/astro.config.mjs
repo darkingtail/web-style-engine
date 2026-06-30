@@ -17,6 +17,7 @@ export default defineConfig({
             { label: 'Overview', slug: 'guide/overview' },
             { label: 'Architecture', slug: 'guide/architecture' },
             { label: 'Multi-framework demos', slug: 'guide/multi-framework' },
+            { label: 'Release and API policy', slug: 'guide/release-policy' },
           ],
         },
         {
@@ -40,13 +41,6 @@ export default defineConfig({
             { label: 'Advanced Modes', slug: 'api/advanced-modes' },
             { label: 'Renderers', slug: 'api/renderers' },
             { label: 'createStylesCore', slug: 'api/create-styles-core' },
-          ],
-        },
-        {
-          label: 'Migration',
-          items: [
-            { label: 'antdv-style', slug: 'migration/antdv-style' },
-            { label: 'Release and API policy', slug: 'migration/release-policy' },
           ],
         },
       ],

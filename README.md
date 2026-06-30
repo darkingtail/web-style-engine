@@ -2,7 +2,7 @@
 
 A framework-agnostic enterprise-grade Web style engine.
 
-`web-style-engine` supports the style runtime underneath enterprise component libraries, design systems, responsive official websites, and complex Web applications. It extracts the reusable style-engine layer from `antdv-style` and keeps framework adapters, runtime renderers, responsive helpers, token helpers, and design-system integrations separated.
+`web-style-engine` supports the style runtime underneath enterprise component libraries, design systems, responsive official websites, and complex Web applications. It extracts the reusable style-engine layer from `antdv-style` and keeps framework adapters, runtime renderers, responsive helpers, token helpers, and design-system-specific integrations in upper-layer packages.
 
 ## Architecture
 
@@ -13,7 +13,7 @@ Style Engine Core
   -> createStylesCore
   -> Vue / React / Solid adapters
   ->
-Design-system adapters such as antdv-style
+Design-system packages such as antdv-style
 ```
 
 Responsive utilities are available from both the root entry and the `web-style-engine/responsive` subpath:

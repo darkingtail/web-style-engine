@@ -5,14 +5,16 @@ description: Layering for the framework-agnostic enterprise-grade Web style engi
 
 ```txt
 Style Engine Core
-  ↓
+  ->
 DOM / SSR / Noop / Mock Renderer
-  ↓
+  ->
 createStylesCore
-  ↓
+  ->
 Vue / React / Solid adapters
-  ↓
-Design-system adapters such as antdv-style
+  ->
+Design-system packages such as antdv-style
 ```
 
 The lower layers do not know about framework or design-system concerns. This keeps `web-style-engine` usable by Vue, React, Solid, Web Components, iframe previews, Shadow DOM, SSR, and micro-frontends.
+
+Design-system-specific migrations belong in upper-layer ecosystem packages. For example, `antd-style` or `antdv-style` can adapt tokens, defaults, compatibility APIs, and migration guides while consuming `web-style-engine` through its public core, responsive, theme, renderer, and adapter APIs.

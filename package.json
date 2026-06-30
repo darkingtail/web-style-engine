@@ -41,10 +41,6 @@
     "./responsive": {
       "types": "./dist/responsive/index.d.ts",
       "import": "./dist/responsive/index.js"
-    },
-    "./migration": {
-      "types": "./dist/migration/index.d.ts",
-      "import": "./dist/migration/index.js"
     }
   },
   "scripts": {

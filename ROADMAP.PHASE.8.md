@@ -1,30 +1,27 @@
-# Phase 8: Ecosystem Migration
+# Phase 8: Ecosystem Boundary
 
 [Back to roadmap](./ROADMAP.md)
 
 ## Goal
 
-Support migration from `antdv-style` and future design-system adapters.
+Define how upper-layer design-system packages consume `web-style-engine` without shipping design-system-specific migration code in the engine package.
 
 ## Tasks
 
-- [x] Define antdv-style integration boundary.
-- [x] Add antdv token mapping adapter outside core.
-- [x] Add migration guide.
-- [x] Add compatibility tests.
+- [x] Define the design-system integration boundary.
+- [x] Keep antd-style and antdv-style migration helpers out of the engine runtime.
+- [x] Document that migrations belong in upper-layer ecosystem packages.
 - [x] Define release strategy.
 - [x] Define API stability policy.
 
 ## Progress
 
-- Added antdv migration boundary helpers under `web-style-engine/migration`.
-- Added `createAntdvTokenAdapter` and `applyAntdvThemeToEngine`.
-- Added explicit antdv-style compatibility gate.
-- Added release strategy and API stability policy helpers.
-- Added compatibility tests for Emotion wrapping, token mapping, CSS variable injection, release policy, and API policy.
-- Expanded migration documentation and release/API policy documentation.
+- Removed antdv-style-specific migration helpers from the engine package boundary.
+- Removed the `web-style-engine/migration` public export.
+- Kept release strategy and API stability policy as documentation rather than runtime API.
+- Documented that `antd-style`, `antdv-style`, and other ecosystem packages should implement their own migration adapters on top of the engine public APIs.
 
 ## Acceptance
 
-- `antdv-style` can consume `web-style-engine` without moving antdv-specific logic into core.
-- Migration path is documented.
+- `web-style-engine` remains framework-agnostic and design-system-agnostic.
+- Ecosystem migration responsibility is explicitly assigned to upper-layer packages.

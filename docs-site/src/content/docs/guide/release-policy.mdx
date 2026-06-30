@@ -27,7 +27,6 @@ pnpm docs:build
 - theme runtime
 - framework adapter protocol
 - plugin protocol
-- migration boundary helpers
 
 ## Experimental APIs
 
@@ -37,4 +36,4 @@ pnpm docs:build
 
 Experimental APIs can change in minor versions until promoted. Breaking changes to stable APIs require a major version.
 
-Design-system-specific logic must stay outside core. It should live in adapters such as `antdv-style` or in the `web-style-engine/migration` boundary helpers.
+Design-system-specific logic must stay outside `web-style-engine`. Migrations for `antd-style`, `antdv-style`, or other design systems should live in those upper-layer packages and consume `web-style-engine` through its public APIs.

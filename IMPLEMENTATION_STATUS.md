@@ -58,12 +58,13 @@ Implemented in `src/tokens`, `src/responsive`, and core `engine.vars`:
 - `createResponsiveObserver` with SSR-safe snapshots and injected `matchMedia`
 - responsive helpers passed through `createStylesCore`
 
-## Step 6: antdv-style migration validation
+## Step 6: Ecosystem boundary
 
-Implemented in `src/migration`:
+Documented as a repository boundary:
 
-- `createStyleEngineFromEmotion` compatibility wrapper scaffold
-- `createAntdvStyleMigrationPlan` validation checklist
+- `web-style-engine` exposes generic engine, responsive, theme, token, renderer, plugin, and framework-adapter APIs.
+- antd-style, antdv-style, and other design-system migrations belong in those upper-layer packages.
+- No design-system-specific migration runtime is exported from this package.
 
 ## Docs site
 

@@ -29,13 +29,13 @@ Implemented:
 - H5 `px2rem` and `px2vw` transformers
 - RTL transformer and focused prefixer plugin
 - Explicit advanced modes: block/atomic runtime, static/hybrid extraction metadata, class inspection, serializable snapshots
-- Ecosystem migration helpers for antdv-style boundary, token mapping, compatibility gates, release strategy, and API stability policy
+- Ecosystem boundary policy that keeps antd-style, antdv-style, and other design-system migration helpers outside the engine runtime
 - CSS variables helper and scoped vars injection
 - Theme runtime protocol with scoped theme registration
 - Token alias resolution, derivative token helpers, token diff helpers, and CSS var fallbacks
 - Responsive module: breakpoints, media query helpers, media feature helpers, container query helpers, H5 helpers, responsive object output, observer
 - Vue / React / Solid adapters with provider-style scopes, hook/composable style helpers, reactive theme sources, and responsive external-store bridge
-- Astro docs site with Vue, React, responsive landing, theme runtime, SSR/hydration, advanced modes, and migration policy docs
+- Astro docs site with Vue, React, responsive landing, theme runtime, SSR/hydration, advanced modes, and release/API policy docs
 
 Partially implemented:
 
@@ -55,7 +55,7 @@ Partially implemented:
 | 5 | SSR and Hydration | [ROADMAP.PHASE.5.md](./ROADMAP.PHASE.5.md) |
 | 6 | Plugins and Compatibility | [ROADMAP.PHASE.6.md](./ROADMAP.PHASE.6.md) |
 | 7 | Advanced Modes | [ROADMAP.PHASE.7.md](./ROADMAP.PHASE.7.md) |
-| 8 | Ecosystem Migration | [ROADMAP.PHASE.8.md](./ROADMAP.PHASE.8.md) |
+| 8 | Ecosystem Boundary | [ROADMAP.PHASE.8.md](./ROADMAP.PHASE.8.md) |
 
 ## Working Rules
 
