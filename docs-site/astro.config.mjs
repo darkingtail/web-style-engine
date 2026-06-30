@@ -1,7 +1,6 @@
 import { defineConfig } from 'astro/config'
 import starlight from '@astrojs/starlight'
 import react from '@astrojs/react'
-import solid from '@astrojs/solid-js'
 import vue from '@astrojs/vue'
 
 export default defineConfig({
@@ -64,6 +63,5 @@ export default defineConfig({
     }),
     vue(),
     react(),
-    solid(),
   ],
 })
