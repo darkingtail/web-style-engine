@@ -2,8 +2,12 @@
 import 'antdv-next/dist/reset.css'
 
 import { computed, ref } from 'vue'
-import { Button, Card, ConfigProvider, Statistic, theme as antdvTheme } from 'antdv-next'
-import type { GlobalToken } from 'antdv-next'
+import Button from 'antdv-next/dist/button/index'
+import Card from 'antdv-next/dist/card/index'
+import ConfigProvider from 'antdv-next/dist/config-provider/index'
+import Statistic from 'antdv-next/dist/statistic/index'
+import antdvTheme from 'antdv-next/dist/theme/index'
+import type { GlobalToken } from 'antdv-next/dist/theme/index'
 import {
   createDOMRenderer,
   createNoopRenderer,
