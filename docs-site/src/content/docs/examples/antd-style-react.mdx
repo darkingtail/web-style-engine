@@ -1,0 +1,44 @@
+---
+title: Ant Design style example
+description: A simplified antd-style-like facade for React business components.
+---
+
+import MiniAntdStyleReactExample from '../../../components/MiniAntdStyleReactExample'
+
+This example shows the shape of an upper-layer `antd-style` package. It consumes real `antd` components and Ant Design tokens, creates a business-friendly `createStyles` facade, and lets custom React components use that facade without touching the low-level style engine.
+
+<MiniAntdStyleReactExample client:only="react" />
+
+## Boundary
+
+`web-style-engine` owns rendering, class generation, responsive helpers, CSS variables, and framework adapter primitives. A package like `antd-style` should own Ant Design token consumption, defaults, component-library conventions, and business-facing APIs.
+
+## Mini facade
+
+```ts
+function createMiniAntdStyle({ token }) {
+  const engine = createStyleEngine({ key: 'mini-antd-style' })
+  const theme = {
+    ...token,
+    appRadius: token.borderRadius + 2,
+    controlHeight: 36,
+  }
+
+  engine.vars('.mini-antd-style', theme, { prefix: 'ant' })
+
+  const system = createReactStyleSystem({
+    engine,
+    theme,
+    responsive,
+  })
+
+  return {
+    createStyles: system.createUseStyles,
+    useToken: system.useTheme,
+    css: engine.css,
+    cx: engine.cx,
+  }
+}
+```
+
+Custom business components then consume `createStyles()` and `useToken()` from the upper-layer package rather than importing engine internals.

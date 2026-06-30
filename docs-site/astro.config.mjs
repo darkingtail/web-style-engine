@@ -5,6 +5,21 @@ import solid from '@astrojs/solid-js'
 import vue from '@astrojs/vue'
 
 export default defineConfig({
+  vite: {
+    resolve: {
+      alias: {
+        'dayjs/plugin/advancedFormat': 'dayjs/plugin/advancedFormat.js',
+        'dayjs/plugin/customParseFormat': 'dayjs/plugin/customParseFormat.js',
+        'dayjs/plugin/localeData': 'dayjs/plugin/localeData.js',
+        'dayjs/plugin/weekday': 'dayjs/plugin/weekday.js',
+        'dayjs/plugin/weekOfYear': 'dayjs/plugin/weekOfYear.js',
+        'dayjs/plugin/weekYear': 'dayjs/plugin/weekYear.js',
+      },
+    },
+    ssr: {
+      noExternal: ['antdv-next', '@v-c/picker'],
+    },
+  },
   integrations: [
     starlight({
       title: 'web-style-engine',
@@ -25,6 +40,8 @@ export default defineConfig({
           items: [
             { label: 'Vue example', slug: 'examples/vue' },
             { label: 'React example', slug: 'examples/react' },
+            { label: 'antdv-next style', slug: 'examples/antdv-style-vue' },
+            { label: 'Ant Design style', slug: 'examples/antd-style-react' },
             { label: 'Responsive landing', slug: 'examples/responsive-landing' },
             { label: 'Theme runtime', slug: 'examples/theme-runtime' },
           ],
