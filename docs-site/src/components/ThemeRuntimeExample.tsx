@@ -4,6 +4,7 @@ import {
   createStyleEngine,
   createThemeRuntime,
 } from 'web-style-engine'
+import { type DocsLocale, isZh } from './i18n'
 
 const engine = createStyleEngine({
   key: 'theme-example',
@@ -101,18 +102,24 @@ const styles = {
   }, { label: 'ThemeExample-button' }),
 }
 
-export default function ThemeRuntimeExample() {
+export default function ThemeRuntimeExample(props: { locale?: DocsLocale }) {
+  const zh = isZh(props.locale)
+
   return (
     <div className={styles.grid}>
       <section className={styles.card}>
-        <h3 className={styles.title}>Light theme</h3>
-        <p className={styles.copy}>The default scope writes variables to :root and exposes fallback var references.</p>
-        <button className={styles.button} type="button">Primary action</button>
+        <h3 className={styles.title}>{zh ? '亮色主题' : 'Light theme'}</h3>
+        <p className={styles.copy}>
+          {zh ? '默认作用域将变量写入 :root，并暴露带 fallback 的 var 引用。' : 'The default scope writes variables to :root and exposes fallback var references.'}
+        </p>
+        <button className={styles.button} type="button">{zh ? '主要操作' : 'Primary action'}</button>
       </section>
       <section className={styles.card} data-theme="dark">
-        <h3 className={styles.title}>Dark theme</h3>
-        <p className={styles.copy}>The dark scope overrides the same variables inside one page region.</p>
-        <button className={styles.button} type="button">Primary action</button>
+        <h3 className={styles.title}>{zh ? '暗色主题' : 'Dark theme'}</h3>
+        <p className={styles.copy}>
+          {zh ? '暗色作用域在页面局部区域覆盖同一组变量。' : 'The dark scope overrides the same variables inside one page region.'}
+        </p>
+        <button className={styles.button} type="button">{zh ? '主要操作' : 'Primary action'}</button>
       </section>
     </div>
   )

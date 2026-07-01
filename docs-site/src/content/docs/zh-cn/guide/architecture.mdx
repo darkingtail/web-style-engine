@@ -1,0 +1,20 @@
+﻿---
+title: 架构
+description: "与框架无关的企业级 Web 样式引擎分层。"
+---
+
+```txt
+Style Engine Core
+  ->
+DOM / SSR / Noop / Mock Renderer
+  ->
+createStylesCore
+  ->
+Vue / React / Solid adapters
+  ->
+Design-system packages such as antdv-style
+```
+
+底层不感知框架和设计系统细节。因此 `web-style-engine` 可以服务 Vue、React、Solid、Web Components、iframe 预览、Shadow DOM、SSR 和微前端等场景。
+
+设计系统专属迁移应该放在上层生态包中。例如 `antd-style` 或 `antdv-style` 可以在消费 `web-style-engine` 公开 core、responsive、theme、renderer 和 adapter API 的同时，自己适配 token、默认配置、兼容 API 与迁移指南。

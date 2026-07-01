@@ -1,0 +1,90 @@
+﻿---
+title: Responsive
+description: Breakpoints, media features, container queries, H5 helpers, and observers.
+---
+
+Responsive helpers are exported from `web-style-engine/responsive` and from the root package.
+
+```ts
+import { createResponsive, createResponsiveObserver } from 'web-style-engine'
+
+const responsive = createResponsive({
+  breakpoints: {
+    mobile: 0,
+    tablet: 720,
+    desktop: 1080,
+    wide: 1440,
+  },
+})
+```
+
+## Breakpoint Queries
+
+```ts
+responsive.up('tablet')
+responsive.down('desktop')
+responsive.below('tablet')
+responsive.only('desktop')
+responsive.between('tablet', 'wide')
+```
+
+Use `responsive.object()` inside style objects:
+
+```ts
+engine.css({
+  display: 'grid',
+  ...responsive.object({
+    up: {
+      tablet: { gridTemplateColumns: '1fr 1fr' },
+      wide: { maxWidth: 1280 },
+    },
+  }),
+})
+```
+
+## Media Features
+
+```ts
+responsive.media.print()
+responsive.media.colorScheme('dark')
+responsive.media.reducedMotion()
+responsive.media.contrast('more')
+responsive.media.forcedColors()
+```
+
+## Container Queries
+
+Container helpers reuse the same breakpoint boundaries:
+
+```ts
+responsive.container.up('tablet')
+responsive.container.only('desktop', { name: 'content' })
+responsive.container.query('(inline-size > 40rem)')
+```
+
+## H5 Helpers
+
+```ts
+responsive.h5.vw(37.5)
+responsive.h5.safeAreaInset('bottom')
+responsive.h5.safeAreaPadding({ bottom: '16px' })
+```
+
+For transformer-based H5 output, use `px2vw`:
+
+```ts
+const engine = createStyleEngine({
+  transformers: [px2vw({ viewportWidth: 375 })],
+})
+```
+
+## Observer
+
+Observers are SSR-safe and can use an injected `matchMedia`, which is useful for iframe previews and isolated Shadow DOM hosts.
+
+```ts
+const observer = createResponsiveObserver(responsive, {
+  matchMedia: iframe.contentWindow!.matchMedia.bind(iframe.contentWindow),
+  ssr: { width: 1024 },
+})
+```

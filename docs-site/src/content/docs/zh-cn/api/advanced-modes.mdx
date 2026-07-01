@@ -1,0 +1,68 @@
+﻿---
+title: 高级模式
+description: "Atomic CSS、static/hybrid 提取元数据、快照、类名检查和 Edge runtime 兼容性。"
+---
+
+Advanced modes are opt-in. The default style engine behavior remains block runtime CSS.
+
+## Atomic Mode
+
+```ts
+const engine = createStyleEngine({
+  key: 'app',
+  mode: 'atomic',
+})
+
+const className = engine.css({
+  color: 'red',
+  padding: 8,
+})
+```
+
+Atomic mode emits one class per simple declaration. Nested selectors and at-rules fall back to block output, so existing runtime semantics remain stable.
+
+## Static And Hybrid Metadata
+
+```ts
+const engine = createStyleEngine({
+  mode: 'atomic',
+  extractionMode: 'hybrid',
+})
+```
+
+`extractionMode` records whether rules are intended for `runtime`, `static`, or `hybrid` workflows. It is metadata today, so build tools can inspect it without changing runtime behavior.
+
+## Rule Snapshots
+
+```ts
+const snapshots = engine.snapshotRules()
+JSON.stringify(snapshots)
+```
+
+Snapshots are serializable rule records for visual editors, low-code previews, static extraction tooling, and debugging panels.
+
+## Class Inspection
+
+```ts
+const result = engine.inspectClassName(className)
+```
+
+The result maps one or more generated class names back to their source rules and metadata.
+
+```ts
+{
+  className,
+  rules: [
+    {
+      id,
+      className,
+      cssText,
+      metadata,
+    },
+  ],
+}
+```
+
+## Edge Runtime
+
+The core avoids hard Node-only runtime assumptions. If `process` is unavailable, `createStyleEngine()` still creates a usable framework-free engine.

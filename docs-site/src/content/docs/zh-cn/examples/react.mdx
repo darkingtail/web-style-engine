@@ -1,0 +1,44 @@
+﻿---
+title: React 示例
+description: "使用 state、theme 和响应式工具的 React 适配示例。"
+---
+
+import ReactFullExample from '../../../../components/ReactFullExample'
+
+这个示例使用 `web-style-engine` 主包中的 React 适配器。组件保留本地 React 状态，将状态作为样式 props 传入，并通过 hook 风格 facade 使用共享响应式工具。
+
+<ReactFullExample client:only="react" locale="zh-cn" />
+
+## 关键导入
+
+```ts
+import {
+  createDOMRenderer,
+  createReactStyleSystem,
+  createResponsive,
+  createStyleEngine,
+} from 'web-style-engine'
+```
+
+## 模式
+
+```ts
+const system = createReactStyleSystem({
+  engine,
+  theme,
+  responsive,
+})
+
+const useStyles = system.createUseStyles(({ theme, responsive }, props) => ({
+  root: {
+    color: theme.text,
+    ...responsive.object({
+      up: {
+        regular: { gridTemplateColumns: '1fr auto' },
+      },
+    }),
+  },
+}))
+```
+
+在 React 应用中，可以把 `system.StyleProvider.getValue()` 放入自己的 React context，并在 hooks/components 中调用 `system.createUseStyles()`。包本身不会导入 React。

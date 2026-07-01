@@ -1,0 +1,93 @@
+﻿---
+title: Framework Adapters
+description: Provider, hook, composable, responsive bridge, and SSR patterns for Vue, React, and Solid.
+---
+
+Adapters are framework-facing facades over the same framework-free engine runtime. The package exports adapter protocols, but it does not import Vue, React, or Solid runtimes.
+
+## Shared Runtime
+
+```ts
+const system = createReactStyleSystem({
+  engine,
+  theme,
+  responsive,
+})
+
+system.StyleProvider.getValue()
+system.ThemeProvider.provide({ theme: nextTheme })
+system.useTheme()
+system.useStyleEngine()
+system.useResponsive()
+```
+
+`provide()` returns a cleanup function so SSR or preview code can scope a theme and then restore the previous runtime state.
+
+## Vue Composable Pattern
+
+```ts
+const system = createVueStyleSystem({ engine, theme, responsive })
+const useButtonStyles = system.createUseStyles(({ theme, responsive }, props) => ({
+  root: {
+    color: theme.text,
+    ...responsive.object({
+      up: { tablet: { display: 'grid' } },
+    }),
+  },
+}))
+```
+
+In an app, provide `system.StyleProvider.getValue()` with Vue's `provide()` and read it from your own composable. `web-style-engine` keeps Vue as an outer integration concern.
+
+## React Hook Pattern
+
+```ts
+const system = createReactStyleSystem({ engine, theme, responsive })
+const useButtonStyles = system.createUseStyles(({ theme }, props) => ({
+  root: {
+    color: props.active ? theme.primary : theme.text,
+  },
+}))
+```
+
+For responsive state, bridge the observer into React's `useSyncExternalStore`:
+
+```ts
+const store = createResponsiveExternalStore(observer)
+const snapshot = useSyncExternalStore(
+  store.subscribe,
+  store.getSnapshot,
+  store.getServerSnapshot,
+)
+```
+
+## Solid Signal-Friendly Pattern
+
+```ts
+const system = createSolidStyleSystem({
+  engine,
+  theme: () => themeSignal(),
+  responsive,
+})
+
+const useStyles = system.createUseStyles(({ theme }) => ({
+  root: { color: theme.text },
+}))
+```
+
+Theme values can be functions, so signal-backed values can be resolved at style execution time without importing Solid into the core.
+
+## SSR Pattern
+
+Create one engine per request, render the app, then extract styles:
+
+```ts
+const renderer = createSSRRenderer({ key: 'app', nonce })
+const engine = createStyleEngine({ key: 'app', renderer })
+const system = createReactStyleSystem({ engine, theme, responsive })
+
+const html = renderApp(system.StyleProvider.getValue())
+const styles = engine.extract()
+```
+
+This keeps registry, class names, and extracted CSS request-scoped.

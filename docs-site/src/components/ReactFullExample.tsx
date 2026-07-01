@@ -6,6 +6,7 @@ import {
   createResponsive,
   createStyleEngine,
 } from 'web-style-engine'
+import { type DocsLocale, isZh } from './i18n'
 
 const responsive = createResponsive({
   breakpoints: {
@@ -119,17 +120,43 @@ const useStyles = system.createUseStyles(({ theme, responsive }, props: { compac
   },
 }), { label: 'ReactFullExample' })
 
-export default function ReactFullExample() {
+export default function ReactFullExample(props: { locale?: DocsLocale }) {
   const [compact, setCompact] = useState(false)
   const [selected, setSelected] = useState<'ops' | 'design'>('ops')
   const { styles } = useMemo(() => useStyles({ compact, selected }), [compact, selected])
+  const zh = isZh(props.locale)
+  const items = selected === 'ops'
+    ? zh
+      ? [
+        ['SSR 提取', 'Renderer 输出可以收集到服务端 HTML。'],
+        ['响应式观察器', 'matchMedia 可以注入，也可以在 SSR 中避开。'],
+        ['包边界', 'React 保持在样式引擎核心之外。'],
+      ]
+      : [
+        ['SSR extraction', 'Renderer output can be collected for server HTML.'],
+        ['Responsive observer', 'matchMedia can be injected or avoided for SSR.'],
+        ['Package boundary', 'React stays outside the style engine core.'],
+      ]
+    : zh
+      ? [
+        ['主题 token', '适配器将类型化主题值传入样式工厂。'],
+        ['Slot 样式', '每个样式 slot 都获得稳定类名。'],
+        ['响应式对象', '媒体块来自同一个共享 helper。'],
+      ]
+      : [
+        ['Theme token', 'The adapter passes typed theme values into factories.'],
+        ['Slot styles', 'Each style slot gets a stable class name.'],
+        ['Responsive object', 'Media blocks come from one shared helper.'],
+      ]
 
   return (
     <section className={styles.shell}>
       <div className={styles.panel}>
-        <h3 className={styles.title}>React workflow card</h3>
+        <h3 className={styles.title}>{zh ? 'React 工作流卡片' : 'React workflow card'}</h3>
         <p className={styles.muted}>
-          A React component using the same style engine primitives, with local state shaping generated classes.
+          {zh
+            ? 'React 组件使用同一套样式引擎基础能力，并通过本地状态影响生成类名。'
+            : 'A React component using the same style engine primitives, with local state shaping generated classes.'}
         </p>
         <div className={styles.actions}>
           <button
@@ -137,37 +164,27 @@ export default function ReactFullExample() {
             type="button"
             onClick={() => setSelected('ops')}
           >
-            Ops view
+            {zh ? '运维视图' : 'Ops view'}
           </button>
           <button
             className={selected === 'design' ? styles.selectedButton : styles.button}
             type="button"
             onClick={() => setSelected('design')}
           >
-            Design view
+            {zh ? '设计视图' : 'Design view'}
           </button>
           <button className={styles.button} type="button" onClick={() => setCompact(value => !value)}>
-            Toggle density
+            {zh ? '切换密度' : 'Toggle density'}
           </button>
         </div>
       </div>
 
       <ul className={styles.list}>
-        {(selected === 'ops'
-          ? [
-            ['SSR extraction', 'Renderer output can be collected for server HTML.'],
-            ['Responsive observer', 'matchMedia can be injected or avoided for SSR.'],
-            ['Package boundary', 'React stays outside the style engine core.'],
-          ]
-          : [
-            ['Theme token', 'The adapter passes typed theme values into factories.'],
-            ['Slot styles', 'Each style slot gets a stable class name.'],
-            ['Responsive object', 'Media blocks come from one shared helper.'],
-          ]).map(([title, meta]) => (
-            <li className={styles.item} key={title}>
-              <span className={styles.itemTitle}>{title}</span>
-              <span className={styles.itemMeta}>{meta}</span>
-            </li>
+        {items.map(([title, meta]) => (
+          <li className={styles.item} key={title}>
+            <span className={styles.itemTitle}>{title}</span>
+            <span className={styles.itemMeta}>{meta}</span>
+          </li>
         ))}
       </ul>
     </section>

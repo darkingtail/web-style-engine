@@ -1,0 +1,44 @@
+﻿---
+title: Vue 示例
+description: "使用 theme、props 和响应式工具的 Vue 适配示例。"
+---
+
+import VueFullExample from '../../../../components/VueFullExample.vue'
+
+这个示例使用 `web-style-engine` 主包中的 Vue 适配器。组件保留本地 Vue 状态，将状态作为样式 props 传入，并通过 composable 风格 facade 使用共享响应式工具。
+
+<VueFullExample client:only="vue" locale="zh-cn" />
+
+## 关键导入
+
+```ts
+import {
+  createDOMRenderer,
+  createResponsive,
+  createStyleEngine,
+  createVueStyleSystem,
+} from 'web-style-engine'
+```
+
+## 模式
+
+```ts
+const system = createVueStyleSystem({
+  engine,
+  theme,
+  responsive,
+})
+
+const useStyles = system.createUseStyles(({ theme, responsive }, props) => ({
+  root: {
+    color: theme.text,
+    ...responsive.object({
+      up: {
+        regular: { gridTemplateColumns: '1fr auto' },
+      },
+    }),
+  },
+}))
+```
+
+在 Vue 应用中，可以从应用外壳 provide `system.StyleProvider.getValue()`，并在自己的 composable 中包装 `system.createUseStyles()`。包本身不会导入 Vue。

@@ -1,0 +1,29 @@
+﻿---
+title: 多框架示例
+description: "Astro 可以在同一个文档站中承载 Vue 与 React 示例。"
+---
+
+import VueDemo from '../../../../components/VueDemo.vue'
+import ReactDemo from '../../../../components/ReactDemo'
+
+项目本身与框架无关，因此文档站使用 Astro Starlight。文档站可以承载 Vue、React、Svelte、Lit 或 Web Component 示例，而不会让样式引擎核心变成某个框架专属实现。
+
+## Vue
+
+<VueDemo client:load locale="zh-cn" />
+
+## React
+
+<ReactDemo client:load locale="zh-cn" />
+
+## 源码
+
+```astro
+---
+import VueDemo from '../../../../components/VueDemo.vue'
+import ReactDemo from '../../../../components/ReactDemo'
+---
+
+<VueDemo client:load locale="zh-cn" />
+<ReactDemo client:load locale="zh-cn" />
+```

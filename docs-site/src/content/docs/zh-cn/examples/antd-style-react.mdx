@@ -1,0 +1,44 @@
+﻿---
+title: Ant Design style 示例
+description: "面向 React 业务组件的简化 antd-style 风格 facade。"
+---
+
+import MiniAntdStyleReactExample from '../../../../components/MiniAntdStyleReactExample'
+
+这个示例展示上层 `antd-style` 包的形态。它消费真实的 `antd` 组件和 Ant Design token，提供面向业务开发者友好的 `createStyles` facade，让自定义 React 组件不必直接接触底层样式引擎。
+
+<MiniAntdStyleReactExample client:only="react" locale="zh-cn" />
+
+## 边界
+
+`web-style-engine` 负责渲染、类名生成、响应式工具、CSS 变量和框架适配基础能力。像 `antd-style` 这样的包应该负责 Ant Design token 消费、默认配置、组件库约定和面向业务的 API。
+
+## 简化 facade
+
+```ts
+function createMiniAntdStyle({ token }) {
+  const engine = createStyleEngine({ key: 'mini-antd-style' })
+  const theme = {
+    ...token,
+    appRadius: token.borderRadius + 2,
+    controlHeight: 36,
+  }
+
+  engine.vars('.mini-antd-style', theme, { prefix: 'ant' })
+
+  const system = createReactStyleSystem({
+    engine,
+    theme,
+    responsive,
+  })
+
+  return {
+    createStyles: system.createUseStyles,
+    useToken: system.useTheme,
+    css: engine.css,
+    cx: engine.cx,
+  }
+}
+```
+
+自定义业务组件只消费上层包提供的 `createStyles()` 和 `useToken()`，而不是直接导入 engine 内部能力。

@@ -4,6 +4,7 @@ import {
   createResponsive,
   createStyleEngine,
 } from 'web-style-engine'
+import { type DocsLocale, isZh } from './i18n'
 
 const responsive = createResponsive({
   breakpoints: {
@@ -179,27 +180,31 @@ const styles = {
   }, { label: 'Landing-label' }),
 }
 
-export default function ResponsiveLandingExample() {
+export default function ResponsiveLandingExample(props: { locale?: DocsLocale }) {
+  const zh = isZh(props.locale)
+  const stats = [
+    ['0', 'mobile'],
+    ['720', 'tablet'],
+    ['1080', 'desktop'],
+    ['1440', 'wide'],
+  ]
+
   return (
     <section className={styles.shell}>
       <div className={styles.content}>
-        <p className={styles.eyebrow}>Responsive official site</p>
-        <h3 className={styles.title}>One style engine for every Web surface.</h3>
+        <p className={styles.eyebrow}>{zh ? '响应式官网' : 'Responsive official site'}</p>
+        <h3 className={styles.title}>{zh ? '一套样式引擎覆盖所有 Web 终端。' : 'One style engine for every Web surface.'}</h3>
         <p className={styles.copy}>
-          The same responsive primitives can shape compact mobile pages, tablet split layouts,
-          desktop hero sections, and wide-screen product storytelling.
+          {zh
+            ? '同一套响应式基础能力可以支撑紧凑移动页、平板分栏布局、桌面 hero 区和宽屏产品叙事。'
+            : 'The same responsive primitives can shape compact mobile pages, tablet split layouts, desktop hero sections, and wide-screen product storytelling.'}
         </p>
         <div className={styles.actions}>
-          <button className={styles.primary} type="button">Start design</button>
-          <button className={styles.secondary} type="button">View layout</button>
+          <button className={styles.primary} type="button">{zh ? '开始设计' : 'Start design'}</button>
+          <button className={styles.secondary} type="button">{zh ? '查看布局' : 'View layout'}</button>
         </div>
         <div className={styles.stats}>
-          {[
-            ['0', 'mobile'],
-            ['720', 'tablet'],
-            ['1080', 'desktop'],
-            ['1440', 'wide'],
-          ].map(([value, label]) => (
+          {stats.map(([value, label]) => (
             <span className={styles.stat} key={label}>
               <strong className={styles.value}>{value}</strong>
               <span className={styles.label}>{label}</span>
@@ -208,7 +213,7 @@ export default function ResponsiveLandingExample() {
         </div>
       </div>
       <div className={styles.imageWrap}>
-        <img className={styles.image} src={heroImage} alt="Responsive workspace preview" />
+        <img className={styles.image} src={heroImage} alt={zh ? '响应式工作区预览' : 'Responsive workspace preview'} />
       </div>
     </section>
   )

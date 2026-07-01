@@ -10,6 +10,7 @@ import {
   createResponsive,
   createStyleEngine,
 } from 'web-style-engine'
+import { type DocsLocale, isZh } from './i18n'
 
 type AntdBusinessTheme = GlobalToken & {
   appRadius: number
@@ -55,9 +56,10 @@ function createMiniAntdStyle(options: { token: GlobalToken }) {
   }
 }
 
-function AntdBusinessDashboard() {
+function AntdBusinessDashboard(props: { locale?: DocsLocale }) {
   const { token: antdToken } = antdTheme.useToken()
   const [density, setDensity] = useState<'default' | 'compact'>('default')
+  const zh = isZh(props.locale)
   const miniAntdStyle = useMemo(() => createMiniAntdStyle({ token: antdToken }), [antdToken])
   const useBusinessStyles = useMemo(() => miniAntdStyle.createStyles(({ theme, responsive }, props: { density: 'default' | 'compact' }) => ({
     shell: {
@@ -113,37 +115,42 @@ function AntdBusinessDashboard() {
     <section className={`${styles.shell} mini-antd-style`}>
       <Card>
         <div className={styles.header}>
-          <h3 className={styles.title}>antd-style facade over Ant Design</h3>
+          <h3 className={styles.title}>{zh ? '基于 Ant Design 的 antd-style facade' : 'antd-style facade over Ant Design'}</h3>
           <p className={styles.desc}>
-            A business component uses real Ant Design components while style state and custom slots come from a friendly createStyles facade.
+            {zh
+              ? '业务组件使用真实 Ant Design 组件，同时通过友好的 createStyles facade 管理样式状态和自定义区域。'
+              : 'A business component uses real Ant Design components while style state and custom slots come from a friendly createStyles facade.'}
           </p>
           <div className={styles.actions}>
             <Segmented
-              options={['default', 'compact']}
+              options={[
+                { label: zh ? '默认' : 'default', value: 'default' },
+                { label: zh ? '紧凑' : 'compact', value: 'compact' },
+              ]}
               value={density}
               onChange={value => setDensity(value as 'default' | 'compact')}
             />
-            <Button type="primary">Ant Design Button</Button>
+            <Button type="primary">{zh ? 'Ant Design 按钮' : 'Ant Design Button'}</Button>
           </div>
         </div>
       </Card>
 
       <div className={styles.stats}>
         <div className={styles.stat}>
-          <Statistic title="Primary token" value={token.colorPrimary} />
+          <Statistic title={zh ? '主色 token' : 'Primary token'} value={token.colorPrimary} />
         </div>
         <div className={styles.stat}>
-          <Statistic title="Radius" suffix="px" value={token.borderRadius} />
+          <Statistic title={zh ? '圆角' : 'Radius'} suffix="px" value={token.borderRadius} />
         </div>
         <div className={styles.stat}>
-          <Statistic title="Control height" suffix="px" value={token.controlHeight} />
+          <Statistic title={zh ? '控件高度' : 'Control height'} suffix="px" value={token.controlHeight} />
         </div>
       </div>
     </section>
   )
 }
 
-export default function MiniAntdStyleReactExample() {
+export default function MiniAntdStyleReactExample(props: { locale?: DocsLocale }) {
   return (
     <ConfigProvider
       theme={{
@@ -153,7 +160,7 @@ export default function MiniAntdStyleReactExample() {
         },
       }}
     >
-      <AntdBusinessDashboard />
+      <AntdBusinessDashboard locale={props.locale} />
     </ConfigProvider>
   )
 }

@@ -1,10 +1,13 @@
+import { useEffect, useState } from 'react'
 import {
   createDOMRenderer,
   createNoopRenderer,
   createReactStyleSystem,
   createResponsive,
+  createResponsiveObserver,
   createStyleEngine,
 } from 'web-style-engine'
+import { type DocsLocale, isZh } from './i18n'
 
 const responsive = createResponsive({
   breakpoints: {
@@ -12,6 +15,10 @@ const responsive = createResponsive({
     regular: 720,
     wide: 1080,
   },
+})
+
+const observer = createResponsiveObserver(responsive, {
+  ssr: { width: 1024 },
 })
 
 const engine = createStyleEngine({
@@ -59,18 +66,34 @@ const useStyles = system.createUseStyles(({ theme, responsive }) => ({
     fontWeight: 700,
     width: 'max-content',
   },
+  note: {
+    color: '#5b4b76',
+    fontSize: 13,
+    margin: '6px 0 0',
+  },
 }), { label: 'ReactDemo' })
 
-export default function ReactDemo() {
+export default function ReactDemo(props: { locale?: DocsLocale }) {
   const { styles } = useStyles({})
+  const zh = isZh(props.locale)
+  const [snapshot, setSnapshot] = useState(() => observer.getSnapshot())
+
+  useEffect(() => observer.subscribe(() => {
+    setSnapshot(observer.getSnapshot())
+  }), [])
 
   return (
     <section className={styles.root}>
       <div>
-        <strong>React adapter</strong>
-        <p>Uses the same engine contract through a React-facing facade.</p>
+        <strong>{zh ? 'React 适配器' : 'React adapter'}</strong>
+        <p>{zh ? '通过面向 React 的 facade 使用同一套 engine 协议。' : 'Uses the same engine contract through a React-facing facade.'}</p>
+        <p className={styles.note}>
+          {zh ? '缩放窗口时，右侧断点会随 matchMedia 变化。' : 'Resize the viewport; the breakpoint badge follows matchMedia.'}
+        </p>
       </div>
-      <span className={styles.badge}>responsive.ready</span>
+      <span className={styles.badge}>
+        {zh ? `当前断点: ${snapshot.current ?? 'unknown'}` : `breakpoint: ${snapshot.current ?? 'unknown'}`}
+      </span>
     </section>
   )
 }

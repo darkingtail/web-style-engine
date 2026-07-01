@@ -1,0 +1,44 @@
+﻿---
+title: antdv-next style example
+description: A simplified antdv-style-like facade for Vue3 business components.
+---
+
+import MiniAntdvStyleVueExample from '../../../../components/MiniAntdvStyleVueExample.vue'
+
+This example shows the shape of an upper-layer `antdv-style` package. It consumes real `antdv-next` components and tokens, creates a composable-friendly `createStyles` facade, and lets custom Vue3 business components stay focused on product code.
+
+<MiniAntdvStyleVueExample client:only="vue" />
+
+## Boundary
+
+`web-style-engine` does not know `antdv-next` token details, `prefixCls`, CSS variable naming, or component-library defaults. A package like `antdv-style` should wrap those conventions and expose Vue-facing APIs for business developers.
+
+## Mini facade
+
+```ts
+function createMiniAntdvStyle({ token, prefixCls = 'ant' }) {
+  const engine = createStyleEngine({ key: 'mini-antdv-style' })
+  const theme = {
+    ...token,
+    prefixCls,
+    cssVarPrefix: prefixCls,
+  }
+
+  engine.vars('.mini-antdv-style', theme, { prefix: prefixCls })
+
+  const system = createVueStyleSystem({
+    engine,
+    theme,
+    responsive,
+  })
+
+  return {
+    createStyles: system.createUseStyles,
+    useToken: system.useTheme,
+    css: engine.css,
+    cx: engine.cx,
+  }
+}
+```
+
+The custom Vue3 component in the demo uses that facade for component states, responsive layout, and token-driven styling.

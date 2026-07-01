@@ -1,0 +1,72 @@
+﻿---
+title: 核心 API
+description: "StyleEngine 协议。"
+---
+
+The core API is exported from `web-style-engine/core` and from the root package.
+
+```ts
+import { createStyleEngine } from 'web-style-engine'
+import { createSSRRenderer } from 'web-style-engine/renderers'
+
+const renderer = createSSRRenderer()
+const engine = createStyleEngine({ renderer, key: 'app' })
+const root = engine.css({ color: 'red', padding: 8 }, { label: 'Button-root' })
+```
+
+Core responsibilities include stable class names, style serialization, registry dedupe, labels, keyframes, global styles, scoped CSS variables, and renderer handoff.
+
+## Engine options
+
+Renderer options can be passed directly for common DOM cases:
+
+```ts
+const engine = createStyleEngine({
+  key: 'app',
+  container: shadowRoot,
+  nonce: 'nonce-value',
+  insertionPoint: document.querySelector('#style-insertion-point'),
+  layer: 'components',
+  specificity: 'low',
+})
+```
+
+For lower-level control, pass an explicit renderer:
+
+```ts
+const engine = createStyleEngine({
+  key: 'app',
+  renderer: createSSRRenderer({ nonce: 'nonce-value' }),
+})
+```
+
+## Nested Styles
+
+CSS object input supports declarations, nested selectors, and top-level at-rules:
+
+```ts
+engine.css({
+  color: 'red',
+  '&:hover': {
+    color: 'blue',
+  },
+  '.icon': {
+    color: 'green',
+  },
+  '@media (min-width: 768px)': {
+    display: 'grid',
+  },
+})
+```
+
+## Font Face
+
+Use `fontFace` for font declarations:
+
+```ts
+engine.fontFace({
+  fontFamily: 'Inter',
+  src: 'url(/fonts/inter.woff2) format("woff2")',
+  fontWeight: 400,
+})
+```

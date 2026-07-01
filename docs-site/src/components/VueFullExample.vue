@@ -7,9 +7,15 @@ import {
   createStyleEngine,
   createVueStyleSystem,
 } from 'web-style-engine'
+import { isZh, type DocsLocale } from './i18n'
+
+const props = defineProps<{
+  locale?: DocsLocale
+}>()
 
 const dense = ref(false)
 const highlighted = ref(true)
+const zh = isZh(props.locale)
 
 const responsive = createResponsive({
   breakpoints: {
@@ -41,14 +47,14 @@ const system = createVueStyleSystem({
 
 const useStyles = system.createUseStyles(({ theme, responsive }, props: { dense: boolean; highlighted: boolean }) => ({
   shell: {
-    border: `1px solid ${theme.border}`,
+    border: props.highlighted ? `2px solid ${theme.accent}` : `1px solid ${theme.border}`,
     borderRadius: 8,
-    background: theme.surface,
+    background: props.highlighted ? theme.surface : theme.panel,
     color: theme.text,
     padding: props.dense ? 14 : 20,
     display: 'grid',
     gap: props.dense ? 12 : 16,
-    boxShadow: props.highlighted ? '0 18px 42px rgba(15, 118, 110, 0.14)' : 'none',
+    boxShadow: props.highlighted ? '0 18px 42px rgba(15, 118, 110, 0.22)' : 'none',
     ...responsive!.object({
       up: {
         regular: {
@@ -62,6 +68,7 @@ const useStyles = system.createUseStyles(({ theme, responsive }, props: { dense:
     border: `1px solid ${theme.border}`,
     borderRadius: 8,
     background: theme.panel,
+    outline: props.highlighted ? `3px solid ${theme.accent}22` : '0 solid transparent',
     padding: props.dense ? 12 : 16,
   },
   title: {
@@ -106,7 +113,7 @@ const useStyles = system.createUseStyles(({ theme, responsive }, props: { dense:
   metric: {
     border: `1px solid ${theme.border}`,
     borderRadius: 8,
-    background: theme.surface,
+    background: props.highlighted ? '#dffaf1' : theme.surface,
     padding: 12,
   },
   value: {
@@ -132,16 +139,16 @@ const result = computed(() => useStyles({
 <template>
   <section :class="result.styles.shell">
     <div :class="result.styles.panel">
-      <h3 :class="result.styles.title">Vue dashboard card</h3>
+      <h3 :class="result.styles.title">{{ zh ? 'Vue 仪表盘卡片' : 'Vue dashboard card' }}</h3>
       <p :class="result.styles.muted">
-        A Vue component consuming the shared style engine, typed theme values, props, and responsive helpers.
+        {{ zh ? 'Vue 组件消费共享样式引擎、类型化主题值、props 和响应式 helper。' : 'A Vue component consuming the shared style engine, typed theme values, props, and responsive helpers.' }}
       </p>
       <div :class="result.styles.actions">
         <button :class="result.styles.primaryButton" type="button" @click="highlighted = !highlighted">
-          Toggle highlight
+          {{ highlighted ? (zh ? '取消高亮' : 'Remove highlight') : (zh ? '打开高亮' : 'Add highlight') }}
         </button>
         <button :class="result.styles.button" type="button" @click="dense = !dense">
-          Toggle density
+          {{ zh ? '切换密度' : 'Toggle density' }}
         </button>
       </div>
     </div>
@@ -149,19 +156,19 @@ const result = computed(() => useStyles({
     <div :class="result.styles.metricGrid">
       <div :class="result.styles.metric">
         <span :class="result.styles.value">3</span>
-        <span :class="result.styles.label">breakpoints</span>
+        <span :class="result.styles.label">{{ zh ? '断点' : 'breakpoints' }}</span>
       </div>
       <div :class="result.styles.metric">
         <span :class="result.styles.value">2</span>
-        <span :class="result.styles.label">state toggles</span>
+        <span :class="result.styles.label">{{ zh ? '状态切换' : 'state toggles' }}</span>
       </div>
       <div :class="result.styles.metric">
         <span :class="result.styles.value">1</span>
-        <span :class="result.styles.label">engine instance</span>
+        <span :class="result.styles.label">{{ zh ? 'engine 实例' : 'engine instance' }}</span>
       </div>
       <div :class="result.styles.metric">
         <span :class="result.styles.value">0</span>
-        <span :class="result.styles.label">framework code in core</span>
+        <span :class="result.styles.label">{{ zh ? '核心中的框架代码' : 'framework code in core' }}</span>
       </div>
     </div>
   </section>

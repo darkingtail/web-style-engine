@@ -15,6 +15,11 @@ import {
   createStyleEngine,
   createVueStyleSystem,
 } from 'web-style-engine'
+import { isZh, type DocsLocale } from './i18n'
+
+const props = defineProps<{
+  locale?: DocsLocale
+}>()
 
 type AntdvBusinessTheme = GlobalToken & {
   prefixCls: string
@@ -25,6 +30,7 @@ type AntdvBusinessTheme = GlobalToken & {
 
 const dense = ref(false)
 const active = ref<'orders' | 'members'>('orders')
+const zh = isZh(props.locale)
 const seedToken = {
   colorPrimary: '#089784',
   borderRadius: 8,
@@ -142,16 +148,28 @@ const result = computed(() => useBusinessStyles({ dense: dense.value }))
 const token = miniAntdvStyle.useToken()
 
 const records = computed(() => active.value === 'orders'
-  ? [
-    ['Order approval', `prefixCls: ${token.prefixCls}`],
-    ['Payment reminder', `CSS var prefix: ${token.cssVarPrefix}`],
-    ['Delivery exception', `controlHeight: ${token.controlHeight}px`],
-  ]
-  : [
-    ['Member profile', `primary: ${token.colorPrimary}`],
-    ['Growth segment', `radius: ${token.borderRadius}px`],
-    ['Custom component', 'business component styles stay local'],
-  ])
+  ? zh
+    ? [
+      ['订单审批', `prefixCls: ${token.prefixCls}`],
+      ['付款提醒', `CSS var prefix: ${token.cssVarPrefix}`],
+      ['配送异常', `controlHeight: ${token.controlHeight}px`],
+    ]
+    : [
+      ['Order approval', `prefixCls: ${token.prefixCls}`],
+      ['Payment reminder', `CSS var prefix: ${token.cssVarPrefix}`],
+      ['Delivery exception', `controlHeight: ${token.controlHeight}px`],
+    ]
+  : zh
+    ? [
+      ['会员档案', `primary: ${token.colorPrimary}`],
+      ['增长分群', `radius: ${token.borderRadius}px`],
+      ['自定义组件', '业务组件样式保持在本地上层包中'],
+    ]
+    : [
+      ['Member profile', `primary: ${token.colorPrimary}`],
+      ['Growth segment', `radius: ${token.borderRadius}px`],
+      ['Custom component', 'business component styles stay local'],
+    ])
 </script>
 
 <template>
@@ -159,19 +177,19 @@ const records = computed(() => active.value === 'orders'
     <section :class="[result.styles.shell, 'mini-antdv-style']">
       <Card>
         <div :class="result.styles.panel">
-          <h3 :class="result.styles.title">antdv-style facade over antdv-next</h3>
+          <h3 :class="result.styles.title">{{ zh ? '基于 antdv-next 的 antdv-style facade' : 'antdv-style facade over antdv-next' }}</h3>
           <p :class="result.styles.desc">
-            A Vue3 business component uses real antdv-next components while custom slots come from a friendly createStyles facade.
+            {{ zh ? 'Vue3 业务组件使用真实 antdv-next 组件，同时通过友好的 createStyles facade 管理自定义区域。' : 'A Vue3 business component uses real antdv-next components while custom slots come from a friendly createStyles facade.' }}
           </p>
           <div :class="result.styles.actions">
             <Button :type="active === 'orders' ? 'primary' : 'default'" @click="active = 'orders'">
-              Orders
+              {{ zh ? '订单' : 'Orders' }}
             </Button>
             <Button :type="active === 'members' ? 'primary' : 'default'" @click="active = 'members'">
-              Members
+              {{ zh ? '会员' : 'Members' }}
             </Button>
             <Button @click="dense = !dense">
-              Toggle density
+              {{ zh ? '切换密度' : 'Toggle density' }}
             </Button>
           </div>
         </div>
@@ -183,7 +201,7 @@ const records = computed(() => active.value === 'orders'
           <span :class="result.styles.itemMeta">{{ meta }}</span>
         </li>
         <li :class="result.styles.item">
-          <Statistic title="Primary token" :value="token.colorPrimary" />
+          <Statistic :title="zh ? '主色 token' : 'Primary token'" :value="token.colorPrimary" />
         </li>
       </ul>
     </section>

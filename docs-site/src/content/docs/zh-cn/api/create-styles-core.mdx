@@ -1,0 +1,18 @@
+﻿---
+title: createStylesCore
+description: "与框架无关的 createStyles 执行能力。"
+---
+
+`createStylesCore` executes style factories with theme, props, optional responsive state, and style utilities.
+
+```ts
+const useStyles = createStylesCore(engine, ({ theme }, props: { active: boolean }) => ({
+  root: {
+    color: props.active ? theme.colorPrimary : theme.colorText,
+  },
+}), { label: 'Button' })
+
+const { styles } = useStyles({ theme, props: { active: true }, cacheKey: 'button-active' })
+```
+
+Framework adapters wrap this function with Vue provide/inject, React context/hooks, or Solid signals.

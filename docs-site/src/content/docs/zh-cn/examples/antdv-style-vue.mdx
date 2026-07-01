@@ -1,0 +1,44 @@
+﻿---
+title: antdv-next style 示例
+description: "面向 Vue3 业务组件的简化 antdv-style 风格 facade。"
+---
+
+import MiniAntdvStyleVueExample from '../../../../components/MiniAntdvStyleVueExample.vue'
+
+这个示例展示上层 `antdv-style` 包的形态。它消费真实的 `antdv-next` 组件和 token，提供适合 composable 的 `createStyles` facade，让自定义 Vue3 业务组件专注于产品代码。
+
+<MiniAntdvStyleVueExample client:only="vue" locale="zh-cn" />
+
+## 边界
+
+`web-style-engine` 不感知 `antdv-next` token 细节、`prefixCls`、CSS 变量命名或组件库默认配置。像 `antdv-style` 这样的包应该封装这些约定，并向业务开发者暴露 Vue 侧 API。
+
+## 简化 facade
+
+```ts
+function createMiniAntdvStyle({ token, prefixCls = 'ant' }) {
+  const engine = createStyleEngine({ key: 'mini-antdv-style' })
+  const theme = {
+    ...token,
+    prefixCls,
+    cssVarPrefix: prefixCls,
+  }
+
+  engine.vars('.mini-antdv-style', theme, { prefix: prefixCls })
+
+  const system = createVueStyleSystem({
+    engine,
+    theme,
+    responsive,
+  })
+
+  return {
+    createStyles: system.createUseStyles,
+    useToken: system.useTheme,
+    css: engine.css,
+    cx: engine.cx,
+  }
+}
+```
+
+示例中的自定义 Vue3 组件通过这个 facade 处理组件状态、响应式布局和 token 驱动样式。

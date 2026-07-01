@@ -1,0 +1,39 @@
+﻿---
+title: 发布与 API 策略
+description: "面向生态使用方的发布策略与 API 稳定性策略。"
+---
+
+`web-style-engine` 使用 SemVer。
+
+## 发布通道
+
+- `canary` 用于早期集成验证
+- `latest` 用于稳定发布
+
+## 必须通过的检查
+
+```txt
+pnpm run typecheck
+pnpm run build
+pnpm test
+pnpm docs:build
+```
+
+## 稳定 API
+
+- core `StyleEngine` protocol
+- renderers
+- responsive helpers
+- theme runtime
+- framework adapter protocol
+- plugin protocol
+
+## 实验性 API
+
+- atomic mode
+- static extraction metadata
+- streaming SSR chunks
+
+实验性 API 在提升为稳定 API 前，可能在 minor 版本中变化。稳定 API 的破坏性变更需要 major 版本。
+
+设计系统专属逻辑必须留在 `web-style-engine` 之外。`antd-style`、`antdv-style` 或其它设计系统的迁移能力应放在对应上层包中，并通过公开 API 消费 `web-style-engine`。
