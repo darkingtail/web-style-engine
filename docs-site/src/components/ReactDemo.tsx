@@ -83,7 +83,7 @@ export default function ReactDemo(props: { locale?: DocsLocale }) {
   }), [])
 
   return (
-    <section className={styles.root}>
+    <section className={`${styles.root} not-content`}>
       <div>
         <strong>{zh ? 'React 适配器' : 'React adapter'}</strong>
         <p>{zh ? '通过面向 React 的 facade 使用同一套 engine 协议。' : 'Uses the same engine contract through a React-facing facade.'}</p>

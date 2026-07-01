@@ -190,7 +190,7 @@ export default function ResponsiveLandingExample(props: { locale?: DocsLocale })
   ]
 
   return (
-    <section className={styles.shell}>
+    <section className={`${styles.shell} not-content`}>
       <div className={styles.content}>
         <p className={styles.eyebrow}>{zh ? '响应式官网' : 'Responsive official site'}</p>
         <h3 className={styles.title}>{zh ? '一套样式引擎覆盖所有 Web 终端。' : 'One style engine for every Web surface.'}</h3>

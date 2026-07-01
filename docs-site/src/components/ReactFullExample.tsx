@@ -150,7 +150,7 @@ export default function ReactFullExample(props: { locale?: DocsLocale }) {
       ]
 
   return (
-    <section className={styles.shell}>
+    <section className={`${styles.shell} not-content`}>
       <div className={styles.panel}>
         <h3 className={styles.title}>{zh ? 'React 工作流卡片' : 'React workflow card'}</h3>
         <p className={styles.muted}>

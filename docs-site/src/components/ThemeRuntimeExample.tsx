@@ -106,7 +106,7 @@ export default function ThemeRuntimeExample(props: { locale?: DocsLocale }) {
   const zh = isZh(props.locale)
 
   return (
-    <div className={styles.grid}>
+    <div className={`${styles.grid} not-content`}>
       <section className={styles.card}>
         <h3 className={styles.title}>{zh ? '亮色主题' : 'Light theme'}</h3>
         <p className={styles.copy}>

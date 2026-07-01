@@ -86,6 +86,7 @@ const miniAntdvStyle = createMiniAntdvStyle({
 const useBusinessStyles = miniAntdvStyle.createStyles(({ theme, responsive }, props: { dense: boolean }) => ({
   shell: {
     display: 'grid',
+    alignItems: 'start',
     gap: props.dense ? 12 : 16,
     border: `1px solid ${theme.colorBorder}`,
     borderRadius: theme.borderRadius + 2,
@@ -103,6 +104,7 @@ const useBusinessStyles = miniAntdvStyle.createStyles(({ theme, responsive }, pr
   panel: {
     display: 'grid',
     gap: 12,
+    alignContent: 'start',
   },
   title: {
     margin: 0,
@@ -117,7 +119,9 @@ const useBusinessStyles = miniAntdvStyle.createStyles(({ theme, responsive }, pr
   actions: {
     display: 'flex',
     flexWrap: 'wrap',
+    alignItems: 'center',
     gap: 8,
+    overflow: 'hidden',
   },
   list: {
     display: 'grid',
@@ -173,8 +177,8 @@ const records = computed(() => active.value === 'orders'
 </script>
 
 <template>
-  <ConfigProvider :theme="{ token: seedToken }">
-    <section :class="[result.styles.shell, 'mini-antdv-style']">
+  <ConfigProvider :theme="{ token: seedToken }" :wave="{ disabled: true }">
+    <section :class="[result.styles.shell, 'mini-antdv-style', 'not-content']">
       <Card>
         <div :class="result.styles.panel">
           <h3 :class="result.styles.title">{{ zh ? '基于 antdv-next 的 antdv-style facade' : 'antdv-style facade over antdv-next' }}</h3>

@@ -137,7 +137,7 @@ const result = computed(() => useStyles({
 </script>
 
 <template>
-  <section :class="result.styles.shell">
+  <section :class="[result.styles.shell, 'not-content']">
     <div :class="result.styles.panel">
       <h3 :class="result.styles.title">{{ zh ? 'Vue 仪表盘卡片' : 'Vue dashboard card' }}</h3>
       <p :class="result.styles.muted">

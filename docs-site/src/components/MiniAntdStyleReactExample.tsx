@@ -64,6 +64,7 @@ function AntdBusinessDashboard(props: { locale?: DocsLocale }) {
   const useBusinessStyles = useMemo(() => miniAntdStyle.createStyles(({ theme, responsive }, props: { density: 'default' | 'compact' }) => ({
     shell: {
       display: 'grid',
+      alignItems: 'start',
       gap: props.density === 'compact' ? 12 : 16,
       border: `1px solid ${theme.colorBorder}`,
       borderRadius: theme.appRadius,
@@ -81,6 +82,7 @@ function AntdBusinessDashboard(props: { locale?: DocsLocale }) {
     header: {
       display: 'grid',
       gap: 12,
+      alignContent: 'start',
     },
     title: {
       margin: 0,
@@ -95,6 +97,7 @@ function AntdBusinessDashboard(props: { locale?: DocsLocale }) {
     actions: {
       display: 'flex',
       flexWrap: 'wrap',
+      alignItems: 'center',
       gap: 8,
     },
     stats: {
@@ -112,7 +115,7 @@ function AntdBusinessDashboard(props: { locale?: DocsLocale }) {
   const token = miniAntdStyle.useToken()
 
   return (
-    <section className={`${styles.shell} mini-antd-style`}>
+    <section className={`${styles.shell} mini-antd-style not-content`}>
       <Card>
         <div className={styles.header}>
           <h3 className={styles.title}>{zh ? '基于 Ant Design 的 antd-style facade' : 'antd-style facade over Ant Design'}</h3>

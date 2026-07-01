@@ -97,7 +97,7 @@ const { styles } = useStyles({})
 </script>
 
 <template>
-  <section :class="styles.root">
+  <section :class="[styles.root, 'not-content']">
     <div>
       <strong>{{ zh ? 'Vue 适配器' : 'Vue adapter' }}</strong>
       <p>{{ zh ? '通过面向 Vue 的 composable 样式使用共享样式引擎。' : 'Uses the shared style engine with Vue-facing composable styles.' }}</p>
