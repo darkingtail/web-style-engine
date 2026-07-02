@@ -21,3 +21,11 @@ Thumbs.db
 docs-site/dist/
 docs-site/.astro/
 docs-site/node_modules/
+
+# Examples
+examples/*/.next/
+examples/*/.nuxt/
+examples/*/.output/
+examples/*/node_modules/
+examples/*/tsconfig.tsbuildinfo
+examples/*/.data/

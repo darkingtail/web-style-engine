@@ -1,0 +1,84 @@
+---
+title: SSR 框架级示例
+description: "Next.js 和 Nuxt 的项目级示例，展示请求级样式提取与客户端 hydration。"
+---
+
+SSR 示例不放在文档站组件里，而是放在真实应用项目中，因为这里要验证的是框架级接入方式。
+
+## 示例
+
+| 框架 | 路径 | 展示内容 |
+| --- | --- | --- |
+| Next.js App Router | `examples/next-ssr` | `useServerInsertedHTML()`、请求级 React 样式运行时、浏览器样式 hydration。 |
+| Nuxt | `examples/nuxt-ssr` | Nuxt plugin 集成、写入 head 的 Vue SSR 样式、浏览器样式 hydration。 |
+
+## 运行
+
+```sh
+pnpm --dir examples/next-ssr dev
+pnpm --dir examples/next-ssr build
+
+pnpm --dir examples/nuxt-ssr dev
+pnpm --dir examples/nuxt-ssr build
+```
+
+## 共同结构
+
+两个示例都保持 `web-style-engine` 框架无关：
+
+- 应用层为当前渲染作用域创建 engine 和 renderer；
+- 框架接入层负责把样式插入 SSR 文档；
+- 浏览器 renderer 在客户端更新前 hydrate 已存在的 SSR style 标签；
+- 业务组件只消费 React 或 Vue facade，不需要关心 renderer 细节。
+
+## Next.js Registry 形态
+
+```tsx
+const renderer = typeof document === 'undefined'
+  ? createSSRRenderer({ key: 'next-ssr' })
+  : createDOMRenderer({ key: 'next-ssr' })
+
+if (typeof document !== 'undefined') {
+  renderer.hydrate?.(document.querySelectorAll('style[data-next-ssr="next-ssr"]'))
+}
+
+const engine = createStyleEngine({ key: 'next-ssr', renderer })
+
+useServerInsertedHTML(() => {
+  const extracted = engine.extract()
+
+  return (
+    <style
+      data-next-ssr="next-ssr"
+      data-next-ssr-ids={extracted.rules.map(rule => rule.id).join(' ')}
+      dangerouslySetInnerHTML={{ __html: extracted.cssText }}
+    />
+  )
+})
+```
+
+## Nuxt Plugin 形态
+
+```ts
+const renderer = import.meta.server
+  ? createSSRRenderer({ key: 'nuxt-ssr' })
+  : createDOMRenderer({ key: 'nuxt-ssr' })
+
+if (import.meta.client) {
+  renderer.hydrate?.(document.querySelectorAll('style[data-nuxt-ssr="nuxt-ssr"]'))
+}
+
+const engine = createStyleEngine({ key: 'nuxt-ssr', renderer })
+
+useHead({
+  style: [
+    {
+      key: 'nuxt-ssr',
+      'data-nuxt-ssr': 'nuxt-ssr',
+      children: cssText,
+    },
+  ],
+})
+```
+
+这样，请求作用域、框架 hook 和 hydration 协议由应用层或上层适配包承接，核心包仍然可以复用于 React、Vue 和无框架运行时。

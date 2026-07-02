@@ -63,6 +63,7 @@ export default defineConfig({
             { label: 'React example', translations: { 'zh-CN': 'React 示例' }, slug: 'examples/react' },
             { label: 'antdv-next style', translations: { 'zh-CN': 'antdv-next style 示例' }, slug: 'examples/antdv-style-vue' },
             { label: 'Ant Design style', translations: { 'zh-CN': 'Ant Design style 示例' }, slug: 'examples/antd-style-react' },
+            { label: 'SSR framework examples', translations: { 'zh-CN': 'SSR 框架级示例' }, slug: 'examples/ssr' },
             { label: 'Responsive landing', translations: { 'zh-CN': '响应式官网示例' }, slug: 'examples/responsive-landing' },
             { label: 'Theme runtime', translations: { 'zh-CN': '主题运行时' }, slug: 'examples/theme-runtime' },
           ],

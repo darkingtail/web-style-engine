@@ -1,0 +1,84 @@
+---
+title: SSR framework examples
+description: Project-level Next.js and Nuxt examples for request-scoped style extraction and hydration.
+---
+
+The SSR examples live outside the docs site because they are real application projects, not snippets embedded in Astro.
+
+## Examples
+
+| Framework | Path | What it demonstrates |
+| --- | --- | --- |
+| Next.js App Router | `examples/next-ssr` | `useServerInsertedHTML()`, request-scoped React style runtime, and browser style hydration. |
+| Nuxt | `examples/nuxt-ssr` | Nuxt plugin integration, head-injected Vue SSR styles, and browser style hydration. |
+
+## Run Them
+
+```sh
+pnpm --dir examples/next-ssr dev
+pnpm --dir examples/next-ssr build
+
+pnpm --dir examples/nuxt-ssr dev
+pnpm --dir examples/nuxt-ssr build
+```
+
+## Shared Shape
+
+Both examples keep `web-style-engine` framework-agnostic:
+
+- the application layer creates one engine and renderer for the current render scope;
+- the framework integration owns style insertion into the SSR document;
+- the browser renderer hydrates the existing SSR style tag before client-side updates;
+- business components consume the React or Vue facade without dealing with renderer details.
+
+## Next.js Registry Shape
+
+```tsx
+const renderer = typeof document === 'undefined'
+  ? createSSRRenderer({ key: 'next-ssr' })
+  : createDOMRenderer({ key: 'next-ssr' })
+
+if (typeof document !== 'undefined') {
+  renderer.hydrate?.(document.querySelectorAll('style[data-next-ssr="next-ssr"]'))
+}
+
+const engine = createStyleEngine({ key: 'next-ssr', renderer })
+
+useServerInsertedHTML(() => {
+  const extracted = engine.extract()
+
+  return (
+    <style
+      data-next-ssr="next-ssr"
+      data-next-ssr-ids={extracted.rules.map(rule => rule.id).join(' ')}
+      dangerouslySetInnerHTML={{ __html: extracted.cssText }}
+    />
+  )
+})
+```
+
+## Nuxt Plugin Shape
+
+```ts
+const renderer = import.meta.server
+  ? createSSRRenderer({ key: 'nuxt-ssr' })
+  : createDOMRenderer({ key: 'nuxt-ssr' })
+
+if (import.meta.client) {
+  renderer.hydrate?.(document.querySelectorAll('style[data-nuxt-ssr="nuxt-ssr"]'))
+}
+
+const engine = createStyleEngine({ key: 'nuxt-ssr', renderer })
+
+useHead({
+  style: [
+    {
+      key: 'nuxt-ssr',
+      'data-nuxt-ssr': 'nuxt-ssr',
+      children: cssText,
+    },
+  ],
+})
+```
+
+This shape leaves request scoping, framework hooks, and hydration protocol in the application/framework layer, while the core package stays reusable across React, Vue, and non-framework runtimes.
